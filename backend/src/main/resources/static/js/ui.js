@@ -1,9 +1,15 @@
-export function showToast(message) {
+export function showToast(message, type = 'success') {
   const toast = document.getElementById('toast');
   toast.textContent = message;
-  toast.classList.add('show');
+  toast.classList.remove('toast--error', 'toast--success');
+  toast.classList.add(`toast--${type}`, 'show');
   clearTimeout(toast._timeout);
   toast._timeout = setTimeout(() => toast.classList.remove('show'), 3000);
+}
+
+export function setLoading(isLoading) {
+  const loading = document.getElementById('loading');
+  loading.classList.toggle('hidden', !isLoading);
 }
 
 export function showModal(html) {
@@ -77,11 +83,15 @@ export function renderMenu(root, state, actions) {
 
     menuGrid.innerHTML = filtered.map((item) => `
       <article class="card menu-card">
-        ${item.imageUrl ? `<img src="${item.imageUrl}" alt="${item.name}" />` : ''}
-        <span class="badge">${item.category}</span>
+        <div class="menu-card__media">
+          ${item.imageUrl ? `<img src="${item.imageUrl}" alt="${item.name}" />` : '<span>Keine Abbildung</span>'}
+        </div>
+        <div class="menu-card__meta">
+          <span class="badge">${item.category}</span>
+          <span class="badge price-badge">${item.price.toFixed(2)} €</span>
+        </div>
         <h3>${item.name}</h3>
-        <p>${item.description}</p>
-        <strong>${item.price.toFixed(2)} €</strong>
+        <p class="text-muted">${item.description}</p>
         <div class="grid">
           <button class="btn" data-add="${item.id}">In den Warenkorb</button>
           <button class="btn btn--ghost" data-detail="${item.id}">Details</button>
@@ -112,24 +122,29 @@ export function renderReservation(root, state, actions) {
           <div class="form-group">
             <label for="resName">Name</label>
             <input id="resName" type="text" required />
+            <small class="form-error" data-error="resName"></small>
           </div>
           <div class="form-group">
             <label for="resContact">Telefon oder E-Mail</label>
             <input id="resContact" type="text" required />
+            <small class="form-error" data-error="resContact"></small>
           </div>
           <div class="form-group">
             <label for="resDateTime">Datum &amp; Startzeit</label>
             <input id="resDateTime" type="datetime-local" required />
+            <small class="form-error" data-error="resDateTime"></small>
           </div>
           <div class="form-group">
             <label for="resDuration">Dauer (Minuten)</label>
             <input id="resDuration" type="number" value="90" min="30" step="15" required />
+            <small class="form-error" data-error="resDuration"></small>
           </div>
           <div class="form-group">
             <label for="resPersons">Personen</label>
             <input id="resPersons" type="number" value="2" min="1" required />
+            <small class="form-error" data-error="resPersons"></small>
           </div>
-          <button class="btn" type="submit">Reservierung anfragen</button>
+          <button class="btn" type="submit" disabled>Reservierung anfragen</button>
         </form>
       </div>
       <div class="card" id="reservationResult">
@@ -140,6 +155,20 @@ export function renderReservation(root, state, actions) {
   `;
 
   const form = root.querySelector('#reservationForm');
+  const submitButton = form.querySelector('button[type=\"submit\"]');
+  const fields = Array.from(form.querySelectorAll('input'));
+
+  const updateErrors = () => {
+    fields.forEach((field) => {
+      const error = form.querySelector(`[data-error=\"${field.id}\"]`);
+      if (!error) return;
+      error.textContent = field.validity.valid ? '' : field.validationMessage;
+    });
+    submitButton.disabled = !form.checkValidity();
+  };
+
+  fields.forEach((field) => field.addEventListener('input', updateErrors));
+  updateErrors();
   form.addEventListener('submit', (event) => {
     event.preventDefault();
     const payload = {
@@ -163,9 +192,9 @@ export function renderOrder(root, state, actions) {
           <div class="cart-item">
             <div>
               <strong>${item.name}</strong><br />
-              <small>${item.price.toFixed(2)} €</small>
+              <small class="text-muted">${item.price.toFixed(2)} €</small>
             </div>
-            <div class="grid" style="grid-auto-flow: column; align-items: center; gap: 6px;">
+            <div class="cart-item__controls">
               <button class="btn btn--ghost" data-dec="${item.id}">-</button>
               <span>${item.quantity}</span>
               <button class="btn btn--ghost" data-inc="${item.id}">+</button>
@@ -173,18 +202,20 @@ export function renderOrder(root, state, actions) {
             </div>
           </div>
         `).join('')}
-        <div style="margin-top: 12px;"><strong>Gesamt: ${total.toFixed(2)} €</strong></div>
+        <div class="order-total"><strong>Gesamt: ${total.toFixed(2)} €</strong></div>
       </div>
-      <div class="card">
+      <div class="card order-summary">
         <h2 class="section-title">Checkout</h2>
         <form id="orderForm">
           <div class="form-group">
             <label for="orderName">Name</label>
             <input id="orderName" type="text" required />
+            <small class="form-error" data-error="orderName"></small>
           </div>
           <div class="form-group">
             <label for="orderContact">Telefon oder E-Mail</label>
             <input id="orderContact" type="text" required />
+            <small class="form-error" data-error="orderContact"></small>
           </div>
           <div class="form-group">
             <label for="orderReservation">Reservierungs-ID (optional)</label>
@@ -210,6 +241,18 @@ export function renderOrder(root, state, actions) {
   });
 
   const form = root.querySelector('#orderForm');
+  const submitButton = form.querySelector('button[type=\"submit\"]');
+  const fields = Array.from(form.querySelectorAll('input[required]'));
+  const updateErrors = () => {
+    fields.forEach((field) => {
+      const error = form.querySelector(`[data-error=\"${field.id}\"]`);
+      if (!error) return;
+      error.textContent = field.validity.valid ? '' : field.validationMessage;
+    });
+    submitButton.disabled = !form.checkValidity() || state.cart.length === 0;
+  };
+  fields.forEach((field) => field.addEventListener('input', updateErrors));
+  updateErrors();
   form.addEventListener('submit', (event) => {
     event.preventDefault();
     const payload = {
@@ -230,13 +273,14 @@ export function renderLookup(root, state, actions) {
         <div class="form-group">
           <label for="lookupContact">Telefon oder E-Mail</label>
           <input id="lookupContact" type="text" required />
+          <small class="form-error" data-error="lookupContact"></small>
         </div>
-        <div class="form-group" style="align-self: end;">
-          <button class="btn" type="submit">Suchen</button>
+        <div class="form-group form-actions">
+          <button class="btn" type="submit" disabled>Suchen</button>
         </div>
       </form>
     </section>
-    <section class="grid grid--2" style="margin-top: 16px;">
+    <section class="grid grid--2" id="lookupResults">
       <div class="card">
         <h3 class="section-title">Reservierungen</h3>
         ${state.lookupReservations.length === 0 ? '<p>Keine Reservierungen gefunden.</p>' : state.lookupReservations.map(reservationSummary).join('')}
@@ -249,6 +293,15 @@ export function renderLookup(root, state, actions) {
   `;
 
   const form = root.querySelector('#lookupForm');
+  const submitButton = form.querySelector('button[type=\"submit\"]');
+  const contactInput = form.querySelector('#lookupContact');
+  const updateErrors = () => {
+    const error = form.querySelector('[data-error=\"lookupContact\"]');
+    error.textContent = contactInput.validity.valid ? '' : contactInput.validationMessage;
+    submitButton.disabled = !form.checkValidity();
+  };
+  contactInput.addEventListener('input', updateErrors);
+  updateErrors();
   form.addEventListener('submit', (event) => {
     event.preventDefault();
     actions.onLookup(form.lookupContact.value.trim());
@@ -274,7 +327,7 @@ export function renderContact(root) {
 
 function reservationSummary(reservation) {
   return `
-    <div style="margin-bottom: 12px;">
+    <div class="summary-item">
       <strong>#${reservation.id}</strong> – ${reservation.customerName}<br />
       <small>${formatDateTime(reservation.dateTimeStart)} | ${reservation.persons} Personen | ${reservation.durationMinutes} Min</small><br />
       <small>Tisch: ${reservation.tableName} | Status: ${reservation.status}</small>
@@ -284,7 +337,7 @@ function reservationSummary(reservation) {
 
 function orderSummary(order, includePay = false) {
   return `
-    <div style="margin-bottom: 12px;">
+    <div class="summary-item">
       <strong>#${order.id}</strong> – ${order.customerName}<br />
       <small>Status: ${order.status} | Gesamt: ${order.total.toFixed(2)} €</small><br />
       <small>${order.items.map((item) => `${item.quantity}x ${item.nameSnapshot}`).join(', ')}</small>
