@@ -3,45 +3,181 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
+
   <title>RestaurantApp – Stressfrei reservieren & vorbestellen</title>
+
   <link rel="stylesheet" href="css/style.css" />
 </head>
+
 <body>
-  <header class="site-header" id="siteHeader">
-    <div class="site-header__inner">
-      <div class="brand">
-        <span class="brand__logo">🍽️</span>
-        <div>
-          <h1>RestaurantApp</h1>
-          <p>Stressfrei reservieren &amp; vorbestellen</p>
-        </div>
+
+<!-- HEADER -->
+
+<header class="site-header" id="siteHeader">
+  <div class="site-header__inner">
+
+    <div class="brand">
+      <span class="brand__logo">🍽️</span>
+      <div>
+        <h1>RestaurantApp</h1>
+        <p>Stressfrei reservieren &amp; vorbestellen</p>
       </div>
-      <button class="nav-toggle" id="navToggle" aria-label="Navigation öffnen">☰</button>
-      <nav class="site-nav" id="siteNav">
-        <a href="#/home">Home</a>
-        <a href="#/menu">Menu</a>
-        <a href="#/reservation">Reservierung</a>
-        <a href="#/order">Vorbestellung</a>
-        <a href="#/lookup">Meine Buchungen</a>
-        <a href="#/contact">Kontakt</a>
-      </nav>
     </div>
-  </header>
 
-  <main id="app" class="container"></main>
+    <button class="nav-toggle" id="navToggle" aria-label="Navigation öffnen">
+      ☰
+    </button>
 
-  <div id="toast" class="toast" aria-live="polite"></div>
-  <div id="loading" class="loading hidden" aria-live="polite" aria-label="Laden">
-    <div class="spinner"></div>
+    <nav class="site-nav" id="siteNav">
+      <a href="#/home">Home</a>
+      <a href="#/menu">Menu</a>
+      <a href="#/reservation">Reservierung</a>
+      <a href="#/order">Vorbestellung</a>
+      <a href="#/lookup">Meine Buchungen</a>
+      <a href="#/contact">Kontakt</a>
+    </nav>
+
+  </div>
+</header>
+
+
+<!-- MAIN APP -->
+
+<main id="app" class="container">
+
+  <!-- HERO SECTION -->
+
+  <section class="grid grid--2">
+
+    <div class="card">
+
+      <h2 class="section-title">🍽️ Stressfrei ins Restaurant</h2>
+
+      <p class="text-muted">
+        Reserviere deinen Tisch, bestelle dein Essen vor und spare wertvolle Zeit.
+        Dein Besuch beginnt entspannt – noch bevor du ankommst.
+      </p>
+
+      <div style="margin-top:16px; display:flex; gap:12px; flex-wrap:wrap;">
+        <button class="btn" onclick="location.hash='#/reservation'">
+          Tisch reservieren
+        </button>
+
+        <button class="btn btn--ghost" onclick="location.hash='#/menu'">
+          Speisekarte ansehen
+        </button>
+      </div>
+
+    </div>
+
+    <div class="card">
+      <div class="menu-card__media">
+        Dein Essen wartet schon 🍕
+      </div>
+    </div>
+
+  </section>
+
+
+  <!-- FEATURES -->
+
+  <h2 class="section-title" style="margin-top:36px;">
+    Warum RestaurantApp?
+  </h2>
+
+  <section class="grid grid--3">
+
+    <div class="card">
+      <h3>⏱️ Keine Wartezeiten</h3>
+      <p class="text-muted">
+        Dein Tisch ist vorbereitet und deine Bestellung bereits in Arbeit.
+      </p>
+    </div>
+
+    <div class="card">
+      <h3>📱 Alles digital</h3>
+      <p class="text-muted">
+        Reservierung, Bestellung und Bezahlung direkt in der App.
+      </p>
+    </div>
+
+    <div class="card">
+      <h3>🔔 Live Updates</h3>
+      <p class="text-muted">
+        Erhalte Benachrichtigungen zu deinem Besuch in Echtzeit.
+      </p>
+    </div>
+
+  </section>
+
+
+  <!-- QUICK ACTIONS -->
+
+  <h2 class="section-title" style="margin-top:36px;">
+    Schnellzugriff
+  </h2>
+
+  <section class="grid grid--2">
+
+    <div class="card">
+      <h3>📋 Meine Buchungen</h3>
+      <p class="text-muted">
+        Verwalte deine Reservierungen und Vorbestellungen.
+      </p>
+
+      <button class="btn btn--secondary" onclick="location.hash='#/lookup'">
+        Öffnen
+      </button>
+    </div>
+
+    <div class="card">
+      <h3>☎️ Kontakt</h3>
+      <p class="text-muted">
+        Fragen oder Feedback? Wir helfen dir gerne weiter.
+      </p>
+
+      <button class="btn btn--secondary" onclick="location.hash='#/contact'">
+        Kontaktieren
+      </button>
+    </div>
+
+  </section>
+
+</main>
+
+
+<!-- TOAST -->
+
+<div id="toast" class="toast" aria-live="polite"></div>
+
+
+<!-- LOADING OVERLAY -->
+
+<div id="loading" class="loading hidden" aria-live="polite" aria-label="Laden">
+  <div class="spinner"></div>
+</div>
+
+
+<!-- MODAL -->
+
+<div id="modal" class="modal hidden" role="dialog" aria-modal="true">
+
+  <div class="modal__content">
+
+    <button id="modalClose" class="modal__close" aria-label="Schließen">
+      ×
+    </button>
+
+    <div id="modalBody"></div>
+
   </div>
 
-  <div id="modal" class="modal hidden" role="dialog" aria-modal="true">
-    <div class="modal__content">
-      <button id="modalClose" class="modal__close" aria-label="Schließen">×</button>
-      <div id="modalBody"></div>
-    </div>
-  </div>
+</div>
 
-  <script type="module" src="js/app.js"></script>
+
+<!-- MAIN APP SCRIPT -->
+
+<script type="module" src="js/app.js"></script>
+
 </body>
 </html>
