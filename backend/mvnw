@@ -1,0 +1,3 @@
+#!/bin/sh
+# Simple Maven wrapper proxy for environments with Maven preinstalled.
+exec mvn "$@"

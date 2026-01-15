@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>RestaurantApp – Stressfrei reservieren & vorbestellen</title>
+  <link rel="stylesheet" href="css/style.css" />
+</head>
+<body>
+  <header class="site-header">
+    <div class="brand">
+      <span class="brand__logo">🍽️</span>
+      <div>
+        <h1>RestaurantApp</h1>
+        <p>Stressfrei reservieren &amp; vorbestellen</p>
+      </div>
+    </div>
+    <nav class="site-nav">
+      <a href="#/home">Home</a>
+      <a href="#/menu">Menu</a>
+      <a href="#/reservation">Reservierung</a>
+      <a href="#/order">Vorbestellung</a>
+      <a href="#/lookup">Meine Buchungen</a>
+      <a href="#/contact">Kontakt</a>
+    </nav>
+  </header>
+
+  <main id="app" class="container"></main>
+
+  <div id="toast" class="toast" aria-live="polite"></div>
+
+  <div id="modal" class="modal hidden" role="dialog" aria-modal="true">
+    <div class="modal__content">
+      <button id="modalClose" class="modal__close" aria-label="Schließen">×</button>
+      <div id="modalBody"></div>
+    </div>
+  </div>
+
+  <script type="module" src="js/app.js"></script>
+</body>
+</html>
