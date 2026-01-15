@@ -1,6 +1,6 @@
 spring:
   datasource:
-    url: jdbc:h2:mem:restaurantdb;DB_CLOSE_DELAY=-1;DB_CLOSE_ON_EXIT=FALSE
+    url: jdbc:h2:tcp://localhost/./restaurantdb;DB_CLOSE_ON_EXIT=FALSE;AUTO_RECONNECT=TRUE
     driver-class-name: org.h2.Driver
     username: sa
     password:
@@ -12,6 +12,8 @@ spring:
     console:
       enabled: true
       path: /h2-console
+      settings:
+        web-allow-others: false
   jpa:
     hibernate:
       ddl-auto: update
@@ -24,6 +26,12 @@ spring:
   sql:
     init:
       mode: always
+  web:
+    cors:
+      allowed-origins: "http://localhost:8080"
+      allowed-methods: "GET,POST,PUT,DELETE,OPTIONS"
+      allowed-headers: "*"
+      allow-credentials: true
 
 server:
   port: 8080
