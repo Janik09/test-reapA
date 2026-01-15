@@ -19,7 +19,7 @@ public class H2ServerConfig {
     if (existing != null) {
       return existing;
     }
-    Server server = Server.createTcpServer("-tcp", "-tcpPort", "9092");
+    Server server = Server.createTcpServer("-tcp", "-tcpAllowOthers", "-tcpPort", "9092");
     if (SERVER.compareAndSet(null, server)) {
       return server;
     }
