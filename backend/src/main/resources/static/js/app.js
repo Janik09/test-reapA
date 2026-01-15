@@ -10,6 +10,7 @@ import {
   showToast,
   showModal,
   closeModal,
+  setLoading,
 } from './ui.js';
 
 const root = document.getElementById('app');
@@ -52,13 +53,16 @@ const actions = {
     });
   },
   onCreateReservation: async (payload) => {
+    setLoading(true);
     try {
       const reservation = await api.createReservation(payload);
       state.reservationResult = reservation;
       showToast(`Reservierung bestätigt! Tisch ${reservation.tableName}.`);
       handleRoute();
     } catch (error) {
-      showToast(error.message);
+      showToast(error.message, 'error');
+    } finally {
+      setLoading(false);
     }
   },
   onUpdateQuantity: (id, delta) => {
@@ -75,6 +79,7 @@ const actions = {
     handleRoute();
   },
   onCreateOrder: async (payload) => {
+    setLoading(true);
     try {
       const order = await api.createOrder(payload);
       state.orderResult = order;
@@ -82,10 +87,13 @@ const actions = {
       showToast(`Bestellung #${order.id} wurde angelegt.`);
       handleRoute();
     } catch (error) {
-      showToast(error.message);
+      showToast(error.message, 'error');
+    } finally {
+      setLoading(false);
     }
   },
   onLookup: async (contact) => {
+    setLoading(true);
     try {
       const [reservations, orders] = await Promise.all([
         api.getReservations(contact),
@@ -96,17 +104,22 @@ const actions = {
       showToast('Suchergebnisse aktualisiert.');
       handleRoute();
     } catch (error) {
-      showToast(error.message);
+      showToast(error.message, 'error');
+    } finally {
+      setLoading(false);
     }
   },
   onPayOrder: async (id) => {
+    setLoading(true);
     try {
       const order = await api.payOrder(id);
       state.lookupOrders = state.lookupOrders.map((entry) => (entry.id === order.id ? order : entry));
       showToast(`Bestellung #${order.id} ist bezahlt.`);
       handleRoute();
     } catch (error) {
-      showToast(error.message);
+      showToast(error.message, 'error');
+    } finally {
+      setLoading(false);
     }
   },
 };
@@ -122,11 +135,31 @@ function setupModal() {
   });
 }
 
+function setupNav() {
+  const header = document.getElementById('siteHeader');
+  const toggle = document.getElementById('navToggle');
+  const nav = document.getElementById('siteNav');
+  if (!header || !toggle || !nav) return;
+
+  toggle.addEventListener('click', () => {
+    header.classList.toggle('site-header--open');
+  });
+
+  nav.querySelectorAll('a').forEach((link) => {
+    link.addEventListener('click', () => {
+      header.classList.remove('site-header--open');
+    });
+  });
+}
+
 async function init() {
+  setLoading(true);
   try {
     state.menuItems = await api.getMenu();
   } catch (error) {
-    showToast('Menü konnte nicht geladen werden.');
+    showToast('Menü konnte nicht geladen werden.', 'error');
+  } finally {
+    setLoading(false);
   }
 
   registerRoute('/home', () => renderHome(root));
@@ -137,6 +170,7 @@ async function init() {
   registerRoute('/contact', () => renderContact(root));
 
   setupModal();
+  setupNav();
   initRouter();
 
   if (!window.location.hash) {
