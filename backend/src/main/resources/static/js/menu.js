@@ -1,4 +1,3 @@
-import { api } from './api.js';
 import { showToast, setLoading } from './ui.js';
 
 const categoryOrder = ['STARTER', 'MAIN', 'DESSERT', 'DRINK'];
@@ -46,7 +45,16 @@ export async function renderMenu(root, state, actions) {
   const container = root.querySelector('#menuContent');
   setLoading(true);
   try {
-    state.menuItems = await api.getMenu();
+    const response = await fetch('/api/menu');
+    if (!response.ok) {
+      throw new Error('Menü konnte nicht geladen werden.');
+    }
+    const data = await response.json();
+    if (!Array.isArray(data) || data.length === 0) {
+      container.innerHTML = '<p class="text-muted">Keine Menüdaten verfügbar</p>';
+      return;
+    }
+    state.menuItems = data;
     const grouped = categoryOrder.map((category) => ({
       category,
       items: state.menuItems.filter((item) => item.category === category),
