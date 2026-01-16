@@ -57,6 +57,7 @@ export async function renderMenu(root, state, actions) {
       button.addEventListener('click', () => actions.onAddToCart(Number(button.dataset.add)));
     });
   } catch (error) {
+    console.error('Menü konnte nicht geladen werden.', error);
     showToast('Menü konnte nicht geladen werden.', 'error');
     container.innerHTML = '<p class="text-muted">Menüdaten sind aktuell nicht verfügbar.</p>';
   } finally {
