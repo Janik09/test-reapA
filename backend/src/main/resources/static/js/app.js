@@ -1,9 +1,9 @@
 import { api } from './api.js';
 import { registerRoute, initRouter, handleRoute, navigate } from './router.js';
+import { renderMenu } from './menu.js';
 import {
   renderHome,
   renderLogin,
-  renderMenu,
   renderReservation,
   renderOrder,
   renderLookup,
@@ -71,7 +71,6 @@ const actions = {
     if (!item) return;
     showModal(`
       <h2>${item.name}</h2>
-      <p>${item.description}</p>
       <p><strong>${item.price.toFixed(2)} €</strong></p>
       <p>Kategorie: ${item.category}</p>
       <button class="btn" id="modalAdd">In den Warenkorb</button>
