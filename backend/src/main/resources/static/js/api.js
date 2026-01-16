@@ -35,4 +35,16 @@ export const api = {
   getOrders: (contact) => request(`/orders?contact=${encodeURIComponent(contact)}`),
   getOrder: (id) => request(`/orders/${id}`),
   payOrder: (id) => request(`/orders/${id}/pay`, { method: 'POST' }),
+  login: async (payload) => {
+    const response = await fetch(`${BASE_URL}/auth/login`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(payload),
+    });
+    const body = await response.json().catch(() => ({}));
+    if (!response.ok) {
+      throw new Error(body.status || 'error');
+    }
+    return body;
+  },
 };

@@ -23,6 +23,41 @@ export function closeModal() {
   document.getElementById('modal').classList.add('hidden');
 }
 
+export function renderLogin(root, state, actions) {
+  root.innerHTML = `
+    <section class="grid grid--2">
+      <div class="card">
+        <h2 class="section-title">Login</h2>
+        <form id="loginForm">
+          <div class="form-group">
+            <label for="loginUsername">Benutzername</label>
+            <input id="loginUsername" type="text" required />
+          </div>
+          <div class="form-group">
+            <label for="loginPassword">Passwort</label>
+            <input id="loginPassword" type="password" required />
+          </div>
+          <p class="form-error" id="loginError">${state.loginError || ''}</p>
+          <button class="btn" type="submit">Login</button>
+        </form>
+      </div>
+      <div class="card">
+        <h3 class="section-title">Willkommen zurück</h3>
+        <p>Bitte melde dich an, um fortzufahren.</p>
+      </div>
+    </section>
+  `;
+
+  const form = root.querySelector('#loginForm');
+  form.addEventListener('submit', (event) => {
+    event.preventDefault();
+    actions.onLogin({
+      username: form.loginUsername.value.trim(),
+      password: form.loginPassword.value,
+    });
+  });
+}
+
 export function renderHome(root) {
   root.innerHTML = `
     <section class="grid grid--2">

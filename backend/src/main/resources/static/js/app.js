@@ -2,6 +2,7 @@ import { api } from './api.js';
 import { registerRoute, initRouter, handleRoute, navigate } from './router.js';
 import {
   renderHome,
+  renderLogin,
   renderMenu,
   renderReservation,
   renderOrder,
@@ -16,6 +17,8 @@ import {
 const root = document.getElementById('app');
 
 const state = {
+  isAuthenticated: false,
+  loginError: '',
   menuItems: [],
   cart: [],
   reservationResult: null,
@@ -24,7 +27,33 @@ const state = {
   lookupOrders: [],
 };
 
+async function loadMenu() {
+  setLoading(true);
+  try {
+    state.menuItems = await api.getMenu();
+  } catch (error) {
+    showToast('Menü konnte nicht geladen werden.', 'error');
+  } finally {
+    setLoading(false);
+  }
+}
+
 const actions = {
+  onLogin: async (payload) => {
+    setLoading(true);
+    try {
+      await api.login(payload);
+      state.isAuthenticated = true;
+      state.loginError = '';
+      await loadMenu();
+      navigate('/home');
+    } catch (error) {
+      state.loginError = 'Wrong username or password. Try again.';
+      handleRoute();
+    } finally {
+      setLoading(false);
+    }
+  },
   onAddToCart: (id) => {
     const item = state.menuItems.find((entry) => entry.id === id);
     if (!item) return;
@@ -153,28 +182,28 @@ function setupNav() {
 }
 
 async function init() {
-  setLoading(true);
-  try {
-    state.menuItems = await api.getMenu();
-  } catch (error) {
-    showToast('Menü konnte nicht geladen werden.', 'error');
-  } finally {
-    setLoading(false);
-  }
+  const guarded = (renderer) => () => {
+    if (!state.isAuthenticated) {
+      navigate('/login');
+      return;
+    }
+    renderer();
+  };
 
-  registerRoute('/home', () => renderHome(root));
-  registerRoute('/menu', () => renderMenu(root, state, actions));
-  registerRoute('/reservation', () => renderReservation(root, state, actions));
-  registerRoute('/order', () => renderOrder(root, state, actions));
-  registerRoute('/lookup', () => renderLookup(root, state, actions));
-  registerRoute('/contact', () => renderContact(root));
+  registerRoute('/login', () => renderLogin(root, state, actions));
+  registerRoute('/home', guarded(() => renderHome(root)));
+  registerRoute('/menu', guarded(() => renderMenu(root, state, actions)));
+  registerRoute('/reservation', guarded(() => renderReservation(root, state, actions)));
+  registerRoute('/order', guarded(() => renderOrder(root, state, actions)));
+  registerRoute('/lookup', guarded(() => renderLookup(root, state, actions)));
+  registerRoute('/contact', guarded(() => renderContact(root)));
 
   setupModal();
   setupNav();
   initRouter();
 
-  if (!window.location.hash) {
-    navigate('/home');
+  if (!window.location.hash || !state.isAuthenticated) {
+    navigate('/login');
   }
 }
 
