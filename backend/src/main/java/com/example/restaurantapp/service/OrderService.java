@@ -77,6 +77,13 @@ public class OrderService {
                 .collect(Collectors.toList());
     }
 
+    public List<OrderResponse> getAllOrders() {
+        return orderRepository.findAll().stream()
+                .sorted((a, b) -> b.getCreatedAt().compareTo(a.getCreatedAt()))
+                .map(this::toResponse)
+                .collect(Collectors.toList());
+    }
+
     public OrderResponse getOrder(Long id) {
         RestaurantOrder order = orderRepository.findById(id)
                 .orElseThrow(() -> new NotFoundException("Bestellung nicht gefunden"));
@@ -96,6 +103,17 @@ public class OrderService {
         order.setStatus(OrderStatus.Paid_MOCK);
         RestaurantOrder saved = orderRepository.save(order);
         return toResponse(saved);
+    }
+
+    public void deleteOrder(Long id) {
+        if (!orderRepository.existsById(id)) {
+            throw new NotFoundException("Bestellung nicht gefunden");
+        }
+        orderRepository.deleteById(id);
+    }
+
+    public void deleteAllOrders() {
+        orderRepository.deleteAll();
     }
 
     private void validateRequest(OrderRequest request) {

@@ -99,11 +99,17 @@ img {
 .site-nav a[data-role="waiter"] {
   display: none;
 }
+.site-nav a[data-role="admin"] {
+  display: none;
+}
 
 .role-chef .site-nav a[data-role="chef"] {
   display: inline-flex;
 }
 .role-waiter .site-nav a[data-role="waiter"] {
+  display: inline-flex;
+}
+.role-admin .site-nav a[data-role="admin"] {
   display: inline-flex;
 }
 

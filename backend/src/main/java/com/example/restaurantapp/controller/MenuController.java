@@ -3,8 +3,11 @@ package com.example.restaurantapp.controller;
 import com.example.restaurantapp.dto.MenuItemDto;
 import com.example.restaurantapp.service.MenuService;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
@@ -26,5 +29,20 @@ public class MenuController {
     @GetMapping("/{id}")
     public MenuItemDto getMenuItem(@PathVariable Long id) {
         return menuService.getMenuItem(id);
+    }
+
+    @PostMapping
+    public MenuItemDto createMenuItem(@RequestBody MenuItemDto request) {
+        return menuService.createMenuItem(request);
+    }
+
+    @DeleteMapping("/{id}")
+    public void deleteMenuItem(@PathVariable Long id) {
+        menuService.deleteMenuItem(id);
+    }
+
+    @DeleteMapping
+    public void deleteAllMenuItems() {
+        menuService.deleteAllMenuItems();
     }
 }

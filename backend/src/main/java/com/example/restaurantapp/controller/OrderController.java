@@ -6,6 +6,7 @@ import com.example.restaurantapp.service.OrderService;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -37,6 +38,11 @@ public class OrderController {
         return orderService.getOrder(id);
     }
 
+    @GetMapping("/all")
+    public List<OrderResponse> getAllOrders() {
+        return orderService.getAllOrders();
+    }
+
     @PostMapping("/{id}/pay")
     public OrderResponse payOrder(@PathVariable Long id) {
         return orderService.payOrder(id);
@@ -45,5 +51,15 @@ public class OrderController {
     @PostMapping("/{id}/pay-mock")
     public OrderResponse payOrderMock(@PathVariable Long id) {
         return orderService.payOrderMock(id);
+    }
+
+    @DeleteMapping("/{id}")
+    public void deleteOrder(@PathVariable Long id) {
+        orderService.deleteOrder(id);
+    }
+
+    @DeleteMapping
+    public void deleteAllOrders() {
+        orderService.deleteAllOrders();
     }
 }

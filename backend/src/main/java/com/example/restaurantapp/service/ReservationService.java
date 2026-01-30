@@ -79,6 +79,17 @@ public class ReservationService {
                 .collect(Collectors.toList());
     }
 
+    public void deleteReservation(Long id) {
+        if (!reservationRepository.existsById(id)) {
+            throw new NotFoundException("Reservierung nicht gefunden");
+        }
+        reservationRepository.deleteById(id);
+    }
+
+    public void deleteAllReservations() {
+        reservationRepository.deleteAll();
+    }
+
     private void validateRequest(ReservationRequest request) {
         if (request == null) {
             throw new BadRequestException("Reservierungsdaten fehlen");

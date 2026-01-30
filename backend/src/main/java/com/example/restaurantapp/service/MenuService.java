@@ -31,6 +31,45 @@ public class MenuService {
         return toDto(item);
     }
 
+    public MenuItemDto createMenuItem(MenuItemDto request) {
+        if (request == null) {
+            throw new BadRequestException("Menüdaten fehlen");
+        }
+        if (request.getName() == null || request.getName().isBlank()) {
+            throw new BadRequestException("Name ist erforderlich");
+        }
+        if (request.getDescription() == null || request.getDescription().isBlank()) {
+            throw new BadRequestException("Beschreibung ist erforderlich");
+        }
+        if (request.getPrice() == null) {
+            throw new BadRequestException("Preis ist erforderlich");
+        }
+        if (request.getCategory() == null || request.getCategory().isBlank()) {
+            throw new BadRequestException("Kategorie ist erforderlich");
+        }
+
+        MenuItem item = new MenuItem();
+        item.setName(request.getName().trim());
+        item.setDescription(request.getDescription().trim());
+        item.setPrice(request.getPrice());
+        item.setCategory(request.getCategory().trim());
+        item.setImageUrl(request.getImageUrl());
+        item.setAvailable(request.isAvailable());
+        MenuItem saved = menuItemRepository.save(item);
+        return toDto(saved);
+    }
+
+    public void deleteMenuItem(Long id) {
+        if (!menuItemRepository.existsById(id)) {
+            throw new NotFoundException("Menüeintrag nicht gefunden");
+        }
+        menuItemRepository.deleteById(id);
+    }
+
+    public void deleteAllMenuItems() {
+        menuItemRepository.deleteAll();
+    }
+
     public MenuItem getEntity(Long id) {
         return menuItemRepository.findById(id)
                 .orElseThrow(() -> new NotFoundException("Menüeintrag nicht gefunden"));

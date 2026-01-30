@@ -10,6 +10,7 @@ import {
   renderContact,
   renderChef,
   renderWaiter,
+  renderAdmin,
   showToast,
   showModal,
   closeModal,
@@ -36,6 +37,9 @@ const state = {
   chefOrders: [],
   waiterOrders: [],
   waiterReservations: [],
+  adminMenuItems: [],
+  adminOrders: [],
+  adminReservations: [],
 };
 
 function loadJson(key, fallback) {
@@ -63,6 +67,7 @@ function setRole(role) {
   state.userRole = role;
   document.body.classList.toggle('role-chef', role === 'chef');
   document.body.classList.toggle('role-waiter', role === 'waiter');
+  document.body.classList.toggle('role-admin', role === 'admin');
 }
 
 function markOrderPaid(order) {
@@ -156,6 +161,24 @@ async function loadWaiterReservations() {
   }
 }
 
+async function loadAdminData() {
+  try {
+    const [menuItems, orders, reservations] = await Promise.all([
+      api.getMenu(),
+      api.getAllOrders(),
+      api.getAllReservations(),
+    ]);
+    state.adminMenuItems = Array.isArray(menuItems) ? menuItems : [];
+    state.adminOrders = Array.isArray(orders) ? orders : [];
+    state.adminReservations = Array.isArray(reservations) ? reservations : [];
+  } catch (error) {
+    console.warn('Admin-Daten konnten nicht geladen werden.', { error });
+    state.adminMenuItems = [];
+    state.adminOrders = [];
+    state.adminReservations = [];
+  }
+}
+
 let menuLoadPromise = null;
 let menuLoaded = false;
 
@@ -192,7 +215,8 @@ const actions = {
       const role = result?.role || 'customer';
       const isChef = role === 'chef';
       const isWaiter = role === 'waiter';
-      setRole(isChef ? 'chef' : isWaiter ? 'waiter' : 'customer');
+      const isAdmin = role === 'admin';
+      setRole(isChef ? 'chef' : isWaiter ? 'waiter' : isAdmin ? 'admin' : 'customer');
       if (isChef) {
         await loadChefOrders();
         navigate('/chef');
@@ -201,6 +225,11 @@ const actions = {
       if (isWaiter) {
         await Promise.all([loadWaiterOrders(), loadWaiterReservations()]);
         navigate('/waiter');
+        return;
+      }
+      if (isAdmin) {
+        await loadAdminData();
+        navigate('/admin');
         return;
       }
       await fetchMenu();
@@ -372,6 +401,134 @@ const actions = {
       setLoading(false);
     }
   },
+  onAdminRefresh: async () => {
+    setLoading(true);
+    try {
+      await loadAdminData();
+      showToast('Admin-Daten aktualisiert.');
+      handleRoute();
+    } catch (error) {
+      showToast('Admin-Daten konnten nicht geladen werden.', 'error');
+    } finally {
+      setLoading(false);
+    }
+  },
+  onAdminCreateMenuItem: async (payload) => {
+    setLoading(true);
+    try {
+      await api.createMenuItem(payload);
+      await loadAdminData();
+      showToast('Menüeintrag erstellt.');
+      handleRoute();
+    } catch (error) {
+      showToast(error.message, 'error');
+    } finally {
+      setLoading(false);
+    }
+  },
+  onAdminDeleteMenuItem: async (id) => {
+    setLoading(true);
+    try {
+      await api.deleteMenuItem(id);
+      await loadAdminData();
+      showToast('Menüeintrag gelöscht.');
+      handleRoute();
+    } catch (error) {
+      showToast(error.message, 'error');
+    } finally {
+      setLoading(false);
+    }
+  },
+  onAdminDeleteAllMenuItems: async () => {
+    setLoading(true);
+    try {
+      await api.deleteAllMenuItems();
+      await loadAdminData();
+      showToast('Alle Menüeinträge gelöscht.');
+      handleRoute();
+    } catch (error) {
+      showToast(error.message, 'error');
+    } finally {
+      setLoading(false);
+    }
+  },
+  onAdminDeleteOrder: async (id) => {
+    setLoading(true);
+    try {
+      await api.deleteOrder(id);
+      await loadAdminData();
+      showToast('Bestellung gelöscht.');
+      handleRoute();
+    } catch (error) {
+      showToast(error.message, 'error');
+    } finally {
+      setLoading(false);
+    }
+  },
+  onAdminDeleteAllOrders: async () => {
+    setLoading(true);
+    try {
+      await api.deleteAllOrders();
+      state.paidOrders = [];
+      state.completedOrders = [];
+      saveJson(PAID_ORDERS_KEY, state.paidOrders);
+      saveJson(COMPLETED_ORDERS_KEY, state.completedOrders);
+      await loadAdminData();
+      showToast('Alle Bestellungen gelöscht.');
+      handleRoute();
+    } catch (error) {
+      showToast(error.message, 'error');
+    } finally {
+      setLoading(false);
+    }
+  },
+  onAdminDeleteReservation: async (id) => {
+    setLoading(true);
+    try {
+      await api.deleteReservation(id);
+      await loadAdminData();
+      showToast('Reservierung gelöscht.');
+      handleRoute();
+    } catch (error) {
+      showToast(error.message, 'error');
+    } finally {
+      setLoading(false);
+    }
+  },
+  onAdminDeleteAllReservations: async () => {
+    setLoading(true);
+    try {
+      await api.deleteAllReservations();
+      await loadAdminData();
+      showToast('Alle Reservierungen gelöscht.');
+      handleRoute();
+    } catch (error) {
+      showToast(error.message, 'error');
+    } finally {
+      setLoading(false);
+    }
+  },
+  onAdminDeleteEverything: async () => {
+    setLoading(true);
+    try {
+      await Promise.all([
+        api.deleteAllMenuItems(),
+        api.deleteAllOrders(),
+        api.deleteAllReservations(),
+      ]);
+      state.paidOrders = [];
+      state.completedOrders = [];
+      saveJson(PAID_ORDERS_KEY, state.paidOrders);
+      saveJson(COMPLETED_ORDERS_KEY, state.completedOrders);
+      await loadAdminData();
+      showToast('Alles gelöscht.');
+      handleRoute();
+    } catch (error) {
+      showToast(error.message, 'error');
+    } finally {
+      setLoading(false);
+    }
+  },
   onMarkOrderDone: (id) => {
     markOrderDone(id);
     showToast('Bestellung als fertig markiert.');
@@ -488,6 +645,18 @@ async function init() {
     renderer();
   };
 
+  const adminGuard = (renderer) => () => {
+    if (!state.isAuthenticated) {
+      navigate('/login');
+      return;
+    }
+    if (state.userRole !== 'admin') {
+      navigate('/home');
+      return;
+    }
+    renderer();
+  };
+
   registerRoute('/login', () => renderLogin(root, state, actions));
   registerRoute('/home', guarded(() => renderHome(root)));
   registerRoute('/menu', guarded(async () => {
@@ -506,6 +675,10 @@ async function init() {
   registerRoute('/waiter', waiterGuard(async () => {
     await Promise.all([loadWaiterOrders(), loadWaiterReservations()]);
     renderWaiter(root, state, actions);
+  }));
+  registerRoute('/admin', adminGuard(async () => {
+    await loadAdminData();
+    renderAdmin(root, state, actions);
   }));
   registerRoute('/contact', guarded(() => renderContact(root)));
 
