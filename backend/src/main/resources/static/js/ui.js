@@ -153,6 +153,7 @@ export function renderReservation(root, state, actions) {
 
 export function renderOrder(root, state, actions) {
   const total = state.cart.reduce((sum, item) => sum + item.price * item.quantity, 0);
+  const canPayOrder = state.orderResult && !['PAID', 'PAID_MOCK'].includes(state.orderResult.status);
   root.innerHTML = `
     <section class="grid grid--2">
       <div class="card">

@@ -17,7 +17,15 @@ function renderCategorySection(category, items) {
         ${items.map((item) => `
           <article class="card menu-card">
             <div class="menu-card__media">
-              <img src="${item.imageUrl}" alt="${item.name}" loading="lazy" />
+              ${item.imageUrl
+      ? `
+      <img src="${item.imageUrl}" alt="${item.name}" loading="lazy" data-fallback />
+      <div class="menu-card__fallback hidden">Bild nicht verfügbar</div>
+    `
+      : `
+      <div class="menu-card__fallback">Bild nicht verfügbar</div>
+    `
+  }
             </div>
             <div class="menu-card__meta">
               <span class="badge">${title}</span>
@@ -57,5 +65,14 @@ export function renderMenu(root, state, actions) {
   container.innerHTML = grouped.map((group) => renderCategorySection(group.category, group.items)).join('');
   container.querySelectorAll('[data-add]').forEach((button) => {
     button.addEventListener('click', () => actions.onAddToCart(Number(button.dataset.add)));
+  });
+  container.querySelectorAll('img[data-fallback]').forEach((image) => {
+    image.addEventListener('error', () => {
+      image.classList.add('hidden');
+      const fallback = image.closest('.menu-card__media')?.querySelector('.menu-card__fallback');
+      if (fallback) {
+        fallback.classList.remove('hidden');
+      }
+    });
   });
 }

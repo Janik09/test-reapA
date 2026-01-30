@@ -216,7 +216,7 @@ function buildPaymentForm(order) {
 function validatePaymentForm({ name, cardNumber, expiry, cvc }) {
   if (!name) return 'Name ist erforderlich.';
   if (!/^[0-9]{12,19}$/.test(cardNumber)) return 'Kartennummer ist ungültig.';
-  if (!/^(0[1-9]|1[0-2])\\/(\\d{2}|\\d{4})$/.test(expiry)) return 'Ablaufdatum muss MM/JJ sein.';
+  if (!/^(0[1-9]|1[0-2])\/(\\d{2}|\\d{4})$/.test(expiry)) return 'Ablaufdatum muss MM/JJ sein.';
   if (!/^[0-9]{3,4}$/.test(cvc)) return 'CVC ist ungültig.';
   return '';
 }
