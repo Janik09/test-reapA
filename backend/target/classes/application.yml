@@ -1,4 +1,8 @@
 spring:
+  http:
+    encoding:
+      charset: UTF-8
+      force: true
   web:
     cors:
       allowed-origins: "http://localhost:8080"
@@ -32,6 +36,11 @@ spring:
 
 server:
   port: 8080
+  servlet:
+    encoding:
+      charset: UTF-8
+      enabled: true
+      force: true
 
 app:
   reservation:
