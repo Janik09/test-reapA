@@ -244,6 +244,10 @@ export function renderOrder(root, state, actions) {
     };
     actions.onCreateOrder(payload);
   });
+
+  root.querySelectorAll('[data-qr]').forEach((button) => {
+    button.addEventListener('click', () => actions.onShowOrderQr(Number(button.dataset.qr)));
+  });
 }
 
 export function renderLookup(root, state, actions) {
@@ -290,6 +294,10 @@ export function renderLookup(root, state, actions) {
 
   root.querySelectorAll('[data-pay]').forEach((button) => {
     button.addEventListener('click', () => actions.onPayOrder(Number(button.dataset.pay)));
+  });
+
+  root.querySelectorAll('[data-qr]').forEach((button) => {
+    button.addEventListener('click', () => actions.onShowOrderQr(Number(button.dataset.qr)));
   });
 }
 
@@ -511,10 +519,13 @@ function reservationGallery() {
 function orderSummary(order, includePay = false) {
   return `
     <div class="summary-item">
-      <strong>#${order.id}</strong> – ${order.customerName}<br />
-      <small>Status: ${order.status} | Gesamt: ${order.total.toFixed(2)} €</small><br />
+      <strong>#${order.id}</strong> - ${order.customerName}<br />
+      <small>Status: ${order.status} | Gesamt: ${order.total.toFixed(2)} EUR</small><br />
       <small>${order.items.map((item) => `${item.quantity}x ${item.nameSnapshot}`).join(', ')}</small>
-      ${includePay && !['PAID', 'PAID_MOCK', 'Paid_MOCK', 'PAID_DEMO'].includes(order.status) ? `<div><button class="btn" data-pay="${order.id}">Jetzt bezahlen</button></div>` : ''}
+      <div style="margin-top:8px; display:flex; gap:8px; flex-wrap:wrap;">
+        <button class="btn btn--secondary" data-qr="${order.id}">QR anzeigen</button>
+        ${includePay && !['PAID', 'PAID_MOCK', 'Paid_MOCK', 'PAID_DEMO'].includes(order.status) ? `<button class="btn" data-pay="${order.id}">Jetzt bezahlen</button>` : ''}
+      </div>
     </div>
   `;
 }

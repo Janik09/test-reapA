@@ -77,6 +77,7 @@ function markOrderPaid(order) {
     id: updated.id,
     reservationId: updated.reservationId ?? null,
     customerName: updated.customerName,
+    contact: updated.contact,
     createdAt: updated.createdAt,
     total: updated.total,
     items: updated.items,
@@ -98,6 +99,53 @@ function markOrderDone(id) {
     state.completedOrders.push(id);
     saveJson(COMPLETED_ORDERS_KEY, state.completedOrders);
   }
+}
+
+function buildOrderQrPayload(order) {
+  const items = Array.isArray(order.items)
+    ? order.items.map((item) => {
+      const name = item.nameSnapshot || 'Unbekannt';
+      const qty = Number(item.quantity || 0);
+      const price = item.unitPriceSnapshot != null ? Number(item.unitPriceSnapshot).toFixed(2) : '-';
+      return `${qty}x ${name} (${price} EUR)`;
+    })
+    : [];
+  const lines = [
+    `Bestellung #${order.id}`,
+    order.customerName ? `Name: ${order.customerName}` : null,
+    order.contact ? `Kontakt: ${order.contact}` : null,
+    order.reservationId ? `Reservierung: #${order.reservationId}` : null,
+    order.total != null ? `Summe: ${Number(order.total).toFixed(2)} EUR` : null,
+    order.createdAt ? `Erstellt: ${order.createdAt}` : null,
+    items.length > 0 ? `Items: ${items.join(', ')}` : 'Items: (keine)',
+  ].filter(Boolean);
+  return lines.join('\n');
+}
+
+function showOrderQr(order) {
+  const payload = buildOrderQrPayload(order);
+  const url = `https://api.qrserver.com/v1/create-qr-code/?size=220x220&data=${encodeURIComponent(payload)}`;
+  showModal(`
+    <h2 class="section-title">Bestellung #${order.id} - QR-Code</h2>
+    <p class="text-muted">Bitte vom Kellner scannen lassen.</p>
+    <div style="display:flex;justify-content:center;margin:16px 0;">
+      <img src="${url}" alt="QR-Code Bestellung ${order.id}" />
+    </div>
+    <pre style="white-space:pre-wrap;background:#f8fafc;border:1px solid #e4e7eb;border-radius:12px;padding:12px;margin:0 0 12px;">${payload}</pre>
+    <button class="btn" id="qrClose">OK</button>
+  `);
+  document.getElementById('qrClose').addEventListener('click', closeModal);
+}
+
+function findOrderById(id) {
+  if (state.orderResult?.id === id) {
+    return state.orderResult;
+  }
+  const lookup = state.lookupOrders.find((entry) => entry.id === id);
+  if (lookup) return lookup;
+  const paid = state.paidOrders.find((entry) => entry.id === id);
+  if (paid) return paid;
+  return null;
 }
 
 function parseTime(value) {
@@ -306,6 +354,7 @@ const actions = {
       state.cart = [];
       showToast(`Bestellung #${order.id} wurde angelegt.`);
       handleRoute();
+      showOrderQr(order);
     } catch (error) {
       showToast(error.message, 'error');
     } finally {
@@ -533,6 +582,14 @@ const actions = {
     markOrderDone(id);
     showToast('Bestellung als fertig markiert.');
     handleRoute();
+  },
+  onShowOrderQr: (id) => {
+    const order = findOrderById(id);
+    if (!order) {
+      showToast('Bestellung nicht gefunden.', 'error');
+      return;
+    }
+    showOrderQr(order);
   },
 };
 function buildPaymentForm(order) {
