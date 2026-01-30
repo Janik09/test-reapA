@@ -1,4 +1,4 @@
-ï»¿import { api } from './api.js';
+import { api } from './api.js';
 import { registerRoute, initRouter, handleRoute, navigate } from './router.js';
 import { renderMenu } from './menu.js';
 import {
@@ -43,7 +43,7 @@ async function fetchMenu() {
       return state.menuItems;
     } catch (error) {
       state.menuItems = [];
-      showToast('MenÃ¼ konnte nicht geladen werden.', 'error');
+      showToast('Menü konnte nicht geladen werden.', 'error');
       return state.menuItems;
     } finally {
       setLoading(false);
@@ -78,7 +78,7 @@ const actions = {
     } else {
       state.cart.push({ id: item.id, name: item.name, price: item.price, quantity: 1 });
     }
-    showToast(`${item.name} wurde zum Warenkorb hinzugefÃ¼gt.`);
+    showToast(`${item.name} wurde zum Warenkorb hinzugefügt.`);
     handleRoute();
   },
   onShowDetail: (id) => {
@@ -86,7 +86,7 @@ const actions = {
     if (!item) return;
     showModal(`
       <h2>${item.name}</h2>
-      <p><strong>${item.price.toFixed(2)} â‚¬</strong></p>
+      <p><strong>${item.price.toFixed(2)} €</strong></p>
       <p>Kategorie: ${item.category}</p>
       <button class="btn" id="modalAdd">In den Warenkorb</button>
     `);
@@ -103,8 +103,8 @@ const actions = {
       const reservationDate = formatReservationDate(reservation.dateTimeStart);
       const reservationTime = formatReservationTime(reservation.dateTimeStart);
       const nameLine = reservation.customerName ? `\nName: ${reservation.customerName}` : '';
-      alert(`Reservierung bestÃ¤tigt!\nDatum: ${reservationDate}\nUhrzeit: ${reservationTime}\nPersonen: ${reservation.persons}${nameLine}`);
-      showToast(`Reservierung bestÃ¤tigt! Tisch ${reservation.tableName}.`);
+      alert(`Reservierung bestätigt!\nDatum: ${reservationDate}\nUhrzeit: ${reservationTime}\nPersonen: ${reservation.persons}${nameLine}`);
+      showToast(`Reservierung bestätigt! Tisch ${reservation.tableName}.`);
       handleRoute();
     } catch (error) {
       alert(`Reservierung fehlgeschlagen: ${error.message}`);
@@ -140,7 +140,7 @@ const actions = {
       setLoading(false);
     }
   },
-  onPayOrder: async (id) => {
+    onPayOrder: async (id) => {
     const order = state.orderResult?.id === id
       ? state.orderResult
       : state.lookupOrders.find((entry) => entry.id === id);
@@ -150,30 +150,12 @@ const actions = {
     }
 
     showModal(`
-      <h2 class="section-title">Zahlung wird verarbeitet</h2>
-      <p class="text-muted">Bestellung #${order.id}</p>
+      <h2 class="section-title">Zahlung angenommen (Demo)</h2>
+      <p class="text-muted">Bestellung #${order.id} wurde als angenommen markiert.</p>
+      <button class="btn" id="paymentClose">OK</button>
     `);
-    setLoading(true);
-    try {
-      await new Promise((resolve) => setTimeout(resolve, 1000));
-      const updated = await api.payOrderMock(order.id);
-      if (state.orderResult?.id === updated.id) {
-        state.orderResult = updated;
-      }
-      state.lookupOrders = state.lookupOrders.map((entry) => (entry.id === updated.id ? updated : entry));
-      showModal(`
-        <h2 class="section-title">Bezahlung erfolgreich (Mock)</h2>
-        <p class="text-muted">Bestellung #${updated.id} ist jetzt als bezahlt markiert.</p>
-        <button class="btn" id="paymentClose">OK</button>
-      `);
-      document.getElementById('paymentClose')?.addEventListener('click', closeModal);
-      showToast(`Bestellung #${updated.id} ist bezahlt (Mock).`);
-      handleRoute();
-    } catch (error) {
-      showToast(error.message, 'error');
-    } finally {
-      setLoading(false);
-    }
+    document.getElementById('paymentClose')?.addEventListener('click', closeModal);
+    showToast(`Zahlung für Bestellung #${order.id} angenommen (Demo).`);
   },
   onStartPayment: (id) => {
     const order = state.orderResult?.id === id
@@ -187,7 +169,7 @@ const actions = {
     showModal(buildPaymentForm(order));
     const form = document.getElementById('paymentForm');
     if (!form) return;
-    form.addEventListener('submit', async (event) => {
+        form.addEventListener('submit', async (event) => {
       event.preventDefault();
       const name = form.paymentName.value.trim();
       const cardNumber = form.paymentCard.value.replace(/\s+/g, '');
@@ -204,13 +186,13 @@ const actions = {
       setLoading(true);
       try {
         await new Promise((resolve) => setTimeout(resolve, 1000));
-        const updated = await api.payOrderMock(order.id);
-        if (state.orderResult?.id === updated.id) {
-          state.orderResult = updated;
-        }
-        state.lookupOrders = state.lookupOrders.map((entry) => (entry.id === updated.id ? updated : entry));
-        showToast(`Bestellung #${updated.id} ist bezahlt (Mock).`);
-        closeModal();
+        showModal(`
+          <h2 class="section-title">Zahlung angenommen (Demo)</h2>
+          <p class="text-muted">Bestellung #${order.id} wurde als angenommen markiert.</p>
+          <button class="btn" id="paymentClose">OK</button>
+        `);
+        document.getElementById('paymentClose')?.addEventListener('click', closeModal);
+        showToast(`Zahlung für Bestellung #${order.id} angenommen (Demo).`);
         handleRoute();
       } catch (error) {
         showToast(error.message, 'error');
@@ -240,7 +222,7 @@ const actions = {
 function buildPaymentForm(order) {
   return `
     <h2 class="section-title">Online bezahlen (Mock)</h2>
-    <p class="text-muted">Bestellung #${order.id} â€“ Gesamt: ${order.total.toFixed(2)} â‚¬</p>
+    <p class="text-muted">Bestellung #${order.id} – Gesamt: ${order.total.toFixed(2)} €</p>
     <form id="paymentForm">
       <div class="form-group">
         <label for="paymentName">Name auf der Karte</label>
@@ -266,9 +248,9 @@ function buildPaymentForm(order) {
 
 function validatePaymentForm({ name, cardNumber, expiry, cvc }) {
   if (!name) return 'Name ist erforderlich.';
-  if (!/^[0-9]{12,19}$/.test(cardNumber)) return 'Kartennummer ist ungÃ¼ltig.';
+  if (!/^[0-9]{12,19}$/.test(cardNumber)) return 'Kartennummer ist ungültig.';
   if (!/^(0[1-9]|1[0-2])\/(\\d{2}|\\d{4})$/.test(expiry)) return 'Ablaufdatum muss MM/JJ sein.';
-  if (!/^[0-9]{3,4}$/.test(cvc)) return 'CVC ist ungÃ¼ltig.';
+  if (!/^[0-9]{3,4}$/.test(cvc)) return 'CVC ist ungültig.';
   return '';
 }
 
@@ -350,3 +332,5 @@ if (document.readyState === 'loading') {
 } else {
   init();
 }
+
+
