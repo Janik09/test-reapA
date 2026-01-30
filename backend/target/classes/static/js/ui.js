@@ -164,7 +164,7 @@ export function renderReservation(root, state, actions) {
 
 export function renderOrder(root, state, actions) {
   const total = state.cart.reduce((sum, item) => sum + item.price * item.quantity, 0);
-  const canPayOrder = state.orderResult && !['PAID', 'PAID_MOCK'].includes(state.orderResult.status);
+  const canPayOrder = state.orderResult && !['PAID', 'PAID_MOCK', 'Paid_MOCK', 'PAID_DEMO'].includes(state.orderResult.status);
   root.innerHTML = `
     <section class="grid grid--2">
       <div class="card">
@@ -293,6 +293,23 @@ export function renderLookup(root, state, actions) {
   });
 }
 
+export function renderChef(root, state, actions) {
+  const orders = Array.isArray(state.chefOrders) ? state.chefOrders : [];
+  root.innerHTML = `
+    <section class="card">
+      <h2 class="section-title">Küche</h2>
+      <p class="text-muted">Bezahlte Bestellungen in Reihenfolge der nächsten Reservierung (First come, first serve).</p>
+    </section>
+    <section id="chefOrders" class="grid grid--2">
+      ${orders.length === 0 ? '<p class="text-muted">Keine bezahlten Bestellungen vorhanden.</p>' : orders.map((order) => chefOrderCard(order, state.completedOrders)).join('')}
+    </section>
+  `;
+
+  root.querySelectorAll('[data-order-done]').forEach((button) => {
+    button.addEventListener('click', () => actions.onMarkOrderDone(Number(button.dataset.orderDone)));
+  });
+}
+
 export function renderContact(root) {
   root.innerHTML = `
     <section class="card">
@@ -339,8 +356,38 @@ function orderSummary(order, includePay = false) {
       <strong>#${order.id}</strong> – ${order.customerName}<br />
       <small>Status: ${order.status} | Gesamt: ${order.total.toFixed(2)} €</small><br />
       <small>${order.items.map((item) => `${item.quantity}x ${item.nameSnapshot}`).join(', ')}</small>
-      ${includePay && order.status !== 'PAID' ? `<div><button class="btn" data-pay="${order.id}">Jetzt bezahlen</button></div>` : ''}
+      ${includePay && !['PAID', 'PAID_MOCK', 'Paid_MOCK', 'PAID_DEMO'].includes(order.status) ? `<div><button class="btn" data-pay="${order.id}">Jetzt bezahlen</button></div>` : ''}
     </div>
+  `;
+}
+
+function chefOrderCard(order, completedOrders = []) {
+  const total = Number(order.total || 0);
+  const reservationTime = order.reservation?.dateTimeStart
+    ? formatDateTime(order.reservation.dateTimeStart)
+    : 'Keine Reservierung';
+  const tableInfo = order.reservation?.tableName ? `Tisch: ${order.reservation.tableName}` : '';
+  const createdAt = order.createdAt ? formatDateTime(order.createdAt) : '';
+  const items = Array.isArray(order.items)
+    ? order.items.map((item) => `${item.quantity}x ${item.nameSnapshot}`).join(', ')
+    : '';
+  const isDone = completedOrders.includes(order.id);
+  return `
+    <article class="card">
+      <div class="chef-order__header">
+        <h3 class="section-title">Bestellung #${order.id}</h3>
+        <span class="badge price-badge">${total.toFixed(2)} €</span>
+      </div>
+      <div class="chef-order__meta">
+        <div>Reservierung: ${reservationTime}</div>
+        ${tableInfo ? `<div>${tableInfo}</div>` : ''}
+        ${createdAt ? `<div>Eingang: ${createdAt}</div>` : ''}
+      </div>
+      <p>${items || 'Keine Items vorhanden.'}</p>
+      <button class="btn btn--big ${isDone ? 'btn--success' : ''}" data-order-done="${order.id}" ${isDone ? 'disabled' : ''}>
+        ${isDone ? 'FERTIG GEKOCHT' : 'Als fertig gekocht markieren'}
+      </button>
+    </article>
   `;
 }
 

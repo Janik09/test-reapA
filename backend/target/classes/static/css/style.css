@@ -93,6 +93,13 @@ img {
   font-weight: 600;
   transition: var(--transition);
 }
+.site-nav a[data-role="chef"] {
+  display: none;
+}
+
+.role-chef .site-nav a[data-role="chef"] {
+  display: inline-flex;
+}
 
 .site-nav a.active {
   background: var(--primary);
@@ -206,6 +213,15 @@ img {
 
 .btn--ghost:hover {
   background: #f4f6f9;
+}
+.btn--success {
+  background: #2f855a;
+}
+
+.btn--big {
+  width: 100%;
+  padding: 16px 20px;
+  font-size: 16px;
 }
 
 .form-group {
@@ -449,6 +465,19 @@ textarea:focus {
   border-radius: var(--radius-sm);
   background: #f8fafc;
   margin-bottom: 12px;
+}
+
+.chef-order__header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.chef-order__meta {
+  margin: 8px 0 12px;
+  color: var(--text-muted);
+  font-size: 14px;
 }
 
 .form-actions {

@@ -13,6 +13,8 @@ import org.springframework.web.bind.annotation.RestController;
 public class AuthController {
     private static final String VALID_USERNAME = "Janik Gierer";
     private static final String VALID_PASSWORD = "123456";
+    private static final String CHEF_USERNAME = "Koch";
+    private static final String CHEF_PASSWORD = "Pizza1";
 
     @PostMapping("/login")
     public ResponseEntity<Map<String, String>> login(@RequestBody LoginRequest request) {
@@ -22,10 +24,17 @@ public class AuthController {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
                     .body(Map.of("status", "error"));
         }
-        boolean matches = VALID_USERNAME.equals(request.getUsername().trim())
-                && VALID_PASSWORD.equals(request.getPassword());
+        String username = request.getUsername().trim();
+        String password = request.getPassword();
+        boolean isChef = CHEF_USERNAME.equalsIgnoreCase(username)
+                && CHEF_PASSWORD.equals(password);
+        if (isChef) {
+            return ResponseEntity.ok(Map.of("status", "success", "role", "chef"));
+        }
+        boolean matches = VALID_USERNAME.equals(username)
+                && VALID_PASSWORD.equals(password);
         if (matches) {
-            return ResponseEntity.ok(Map.of("status", "success"));
+            return ResponseEntity.ok(Map.of("status", "success", "role", "customer"));
         }
         return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
                 .body(Map.of("status", "error"));
