@@ -1,0 +1,16 @@
+2026-01-30 09:26:06.727380+01:00 jdbc[3]: exception
+org.h2.jdbc.JdbcSQLSyntaxErrorException: Tabelle "RESTAURANT_TABLE" nicht gefunden (diese Datenbank ist leer)
+Table "RESTAURANT_TABLE" not found (this database is empty); SQL statement:
+INSERT INTO restaurant_table (id, table_name, capacity) VALUES (1, 'Tisch 1', 2), (2, 'Tisch 2', 2), (3, 'Tisch 3', 4), (4, 'Tisch 4', 4), (5, 'Tisch 5', 4), (6, 'Tisch 6', 6), (7, 'Tisch 7', 6), (8, 'Tisch 8', 8), (9, 'Tisch 9', 8), (10, 'Tisch 10', 2) [42104-224]
+2026-01-30 09:26:41.141172+01:00 jdbc[3]: exception
+org.h2.jdbc.JdbcSQLSyntaxErrorException: Tabelle "RESTAURANT_TABLE" nicht gefunden (diese Datenbank ist leer)
+Table "RESTAURANT_TABLE" not found (this database is empty); SQL statement:
+INSERT INTO restaurant_table (id, table_name, capacity) VALUES (1, 'Tisch 1', 2), (2, 'Tisch 2', 2), (3, 'Tisch 3', 4), (4, 'Tisch 4', 4), (5, 'Tisch 5', 4), (6, 'Tisch 6', 6), (7, 'Tisch 7', 6), (8, 'Tisch 8', 8), (9, 'Tisch 9', 8), (10, 'Tisch 10', 2) [42104-224]
+2026-01-30 09:28:12.202948+01:00 jdbc[3]: exception
+org.h2.jdbc.JdbcSQLSyntaxErrorException: Tabelle "RESTAURANT_TABLE" nicht gefunden (diese Datenbank ist leer)
+Table "RESTAURANT_TABLE" not found (this database is empty); SQL statement:
+INSERT INTO restaurant_table (id, table_name, capacity) VALUES (1, 'Tisch 1', 2), (2, 'Tisch 2', 2), (3, 'Tisch 3', 4), (4, 'Tisch 4', 4), (5, 'Tisch 5', 4), (6, 'Tisch 6', 6), (7, 'Tisch 7', 6), (8, 'Tisch 8', 8), (9, 'Tisch 9', 8), (10, 'Tisch 10', 2) [42104-224]
+2026-01-30 09:33:15.533486+01:00 jdbc[3]: exception
+org.h2.jdbc.JdbcSQLSyntaxErrorException: Tabelle "RESTAURANT_TABLE" nicht gefunden (diese Datenbank ist leer)
+Table "RESTAURANT_TABLE" not found (this database is empty); SQL statement:
+INSERT INTO restaurant_table (id, table_name, capacity) VALUES (1, 'Tisch 1', 2), (2, 'Tisch 2', 2), (3, 'Tisch 3', 4), (4, 'Tisch 4', 4), (5, 'Tisch 5', 4), (6, 'Tisch 6', 6), (7, 'Tisch 7', 6), (8, 'Tisch 8', 8), (9, 'Tisch 9', 8), (10, 'Tisch 10', 2) [42104-232]
