@@ -41,4 +41,9 @@ public class OrderController {
     public OrderResponse payOrder(@PathVariable Long id) {
         return orderService.payOrder(id);
     }
+
+    @PostMapping("/{id}/pay-mock")
+    public OrderResponse payOrderMock(@PathVariable Long id) {
+        return orderService.payOrderMock(id);
+    }
 }

@@ -90,6 +90,13 @@ public class OrderService {
         RestaurantOrder saved = orderRepository.save(order);
         return toResponse(saved);
     }
+    public OrderResponse payOrderMock(Long id) {
+        RestaurantOrder order = orderRepository.findById(id)
+                .orElseThrow(() -> new NotFoundException("Bestellung nicht gefunden"));
+        order.setStatus(OrderStatus.PAID_MOCK);
+        RestaurantOrder saved = orderRepository.save(order);
+        return toResponse(saved);
+    }
 
     private void validateRequest(OrderRequest request) {
         if (request == null) {
