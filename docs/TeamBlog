@@ -1,0 +1,135 @@
+# Team-Blog – Ausarbeitung der User Stories
+
+**Datum:** 19. September 2025  
+**Anwesend:** Kovacs, Wolfgruber  
+
+## Thema  
+Heute wurden die User Stories erstmals ausgearbeitet. Ziel war es, eine grundlegende Basis für das Projekt zu schaffen und die Anforderungen klar und nachvollziehbar festzuhalten.
+
+## Ablauf  
+- Gemeinsame Definition der grundlegenden User Stories  
+- Strukturierung der Anforderungen  
+- Präzisierung der Formulierungen  
+- Festlegung erster Akzeptanzkriterien  
+
+## Ergebnisse  
+- User Stories wurden vollständig neu ausgearbeitet  
+- Eine erste, konsistente Grundlage für die weitere Projektarbeit wurde geschaffen  
+- Der initiale Arbeitsaufwand bildete die Basis für alle weiteren Schritte  
+
+## Nächste Schritte  
+- Abstimmung der User Stories im Team  
+- Übernahme ins Backlog  
+- Vorbereitung für die weitere Projektplanung  
+
+---
+
+# Team-Blog – Strukturierung & Projektgrundlagen
+
+**Datum:** 26. September 2025  
+**Anwesend:** Kovacs, Wolfgruber, Schuster, Gierer  
+
+## Thema  
+Heute wurden Meilensteine, User Stories, die Arbeitsverteilung sowie der generelle Aufbau des Repositories weiter ausgearbeitet und strukturiert.
+
+## Ablauf  
+- Weiterführende Ausarbeitung und Anpassung der User Stories  
+- Definition und Ergänzung der Meilensteine  
+- Erstellung einer klaren Arbeitsaufteilung  
+
+## Ergebnisse  
+- User Stories wurden deutlich präziser und einheitlicher formuliert  
+- Meilensteine sind realistisch definiert und eingetragen  
+- Eine funktionierende Arbeitsaufteilung wurde festgelegt  
+
+## Nächste Schritte  
+- Erstellen der ersten Backlog-Aufgaben  
+- Projektstart (Projekt anlegen & Beginn der Implementierung)  
+
+---
+
+# Team-Blog – Projektinitialisierung
+
+**Datum:** 03. Oktober 2025  
+**Anwesend:** Bacher, Gierer, Kovacs, Wolfgruber  
+
+## Thema  
+Erstellung der grundlegenden Frontend- und Backend-Projekte sowie der zugehörigen Datenbankstruktur.
+
+## Ablauf  
+- ER-Diagramm erstellt – *Kovacs*  
+- Spring-Boot-Projekt erstellt – *Wolfgruber*  
+- Datenbank erstellt – *Bacher*  
+- Frontend-Projekt (Flutter) erstellt – *Gierer*  
+
+## Nächste Schritte  
+- Beginn der ersten Frontend-Screens  
+- Definition der Entities, Aktivierung von CORS für Flutter, Anlegen der REST-Controller  
+
+---
+
+# Team-Blog – Refactoring & erste funktionsfähige Version
+
+**Datum:** 17. Oktober 2025  
+**Anwesend:** Bacher, Gierer, Kovacs, Schuster, Wolfgruber  
+
+## Thema  
+Umfassendes Refactoring des gesamten Projekts, da die bestehende Struktur nicht sinnvoll aufgebaut war. Zusätzlich wurde ein erster funktionsfähiger Front- und Backend-Prototyp erstellt.
+
+## Ablauf  
+- Frontend-Programmierung (**Gierer**, **Wieser**, Kovacs)  
+- Backend-Programmierung (**Wieser**, **Gierer**)  
+
+## Nächste Schritte  
+- Veröffentlichung der ersten Release-Version  
+- Erweiterung um weitere Features und optische Verbesserungen  
+
+---
+
+# Team-Blog – Sprint Reforming (Vorbereitung)
+
+**Datum:** 07. November 2025  
+**Anwesend:** Bacher, Gierer, Kovacs, Wieser, Wolfgruber  
+
+## Thema  
+Informationseinholung zu korrekten Vorgehensweisen beim Sprint Reforming.
+
+## Ablauf  
+- Präsentation einer ersten Demo-Version  
+- Projektbedingte Verzögerung (Mathe-Test)  
+- Einholung grundlegender Informationen zum Reforming  
+
+## Nächste Schritte  
+- Fertigstellung des Reformings  
+
+---
+
+# Team-Blog – Sprint Reforming (Abschluss)
+
+**Datum:** 14. November 2025  
+**Anwesend:** Bacher, Gierer, Kovacs, Wieser, Wolfgruber  
+
+## Thema  
+Abschluss des Sprint Reformings.
+
+## Ablauf  
+- Vergleich und Anpassung der User Stories  
+- Überarbeitung von Struktur und Formatierungen  
+
+## Nächste Schritte  
+- Weiterarbeit an der Implementierung  
+
+---
+
+# Team-Blog – Abschluss Version 1.0
+
+**Datum:** 30. Jänner 2026  
+**Anwesend:** Gierer, Wieser  
+
+## Thema  
+Fertigstellung der Version 1.0 durch Pair Programming.
+
+## Ablauf  
+- Intensives Bug-Hunting und Behebung von Fehlern nach dem zweiten Refactoring  
+- Abgleich der neuen Version mit dem Stand des ursprünglichen Projekts  
+- Ergänzung fehlender Features nach bestem Wissen und Können  

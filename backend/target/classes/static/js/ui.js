@@ -519,8 +519,8 @@ function reservationGallery() {
 function orderSummary(order, includePay = false) {
   return `
     <div class="summary-item">
-      <strong>#${order.id}</strong> – ${order.customerName}<br />
-      <small>Status: ${order.status} | Gesamt: ${order.total.toFixed(2)} €</small><br />
+      <strong>#${order.id}</strong> - ${order.customerName}<br />
+      <small>Status: ${order.status} | Gesamt: ${order.total.toFixed(2)} EUR</small><br />
       <small>${order.items.map((item) => `${item.quantity}x ${item.nameSnapshot}`).join(', ')}</small>
       <div style="margin-top:8px; display:flex; gap:8px; flex-wrap:wrap;">
         <button class="btn btn--secondary" data-qr="${order.id}">QR anzeigen</button>
