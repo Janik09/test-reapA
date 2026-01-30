@@ -56,7 +56,7 @@ export const api = {
   getOrders: (contact) => request(`/orders?contact=${encodeURIComponent(contact)}`),
   getOrder: (id) => request(`/orders/${id}`),
   payOrder: (id) => request(`/orders/${id}/pay`, { method: 'POST' }),
-  payOrderMock: (id) => request('/orders/${id}/pay-mock', { method: 'POST' }),
+  payOrderMock: (id) => request(`/orders/${id}/pay-mock`, { method: 'POST' }),
   login: async (payload) => {
     const url = buildUrl('/auth/login');
     let response;

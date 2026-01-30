@@ -193,7 +193,7 @@ export function renderOrder(root, state, actions) {
           <button class="btn" type="submit" ${state.cart.length === 0 ? 'disabled' : ''}>Bestellung abschicken</button>
         </form>
         <div id="orderResult">
-          ${state.orderResult ? orderSummary(state.orderResult) : ''}
+          ${state.orderResult ? orderSummary(state.orderResult, true) : ''}
         </div>
       </div>
     </section>
@@ -207,6 +207,9 @@ export function renderOrder(root, state, actions) {
   });
   root.querySelectorAll('[data-remove]').forEach((button) => {
     button.addEventListener('click', () => actions.onRemoveFromCart(Number(button.dataset.remove)));
+  });
+  root.querySelectorAll('[data-pay]').forEach((button) => {
+    button.addEventListener('click', () => actions.onStartPayment(Number(button.dataset.pay)));
   });
 
   const form = root.querySelector('#orderForm');
@@ -277,7 +280,7 @@ export function renderLookup(root, state, actions) {
   });
 
   root.querySelectorAll('[data-pay]').forEach((button) => {
-    button.addEventListener('click', () => actions.onPayOrder(Number(button.dataset.pay)));
+    button.addEventListener('click', () => actions.onStartPayment(Number(button.dataset.pay)));
   });
 }
 
@@ -305,12 +308,15 @@ function reservationSummary(reservation) {
 }
 
 function orderSummary(order, includePay = false) {
+  const isMockPaid = order.status === 'PAID_MOCK' || order.status === 'Paid_MOCK';
+  const statusLabel = isMockPaid ? 'PAID (Mock)' : order.status;
+  const canPay = order.status !== 'PAID' && !isMockPaid;
   return `
     <div class="summary-item">
       <strong>#${order.id}</strong> – ${order.customerName}<br />
-      <small>Status: ${order.status} | Gesamt: ${order.total.toFixed(2)} €</small><br />
+      <small>Status: ${statusLabel} | Gesamt: ${order.total.toFixed(2)} €</small><br />
       <small>${order.items.map((item) => `${item.quantity}x ${item.nameSnapshot}`).join(', ')}</small>
-      ${includePay && order.status !== 'PAID' ? `<div><button class="btn" data-pay="${order.id}">Jetzt bezahlen</button></div>` : ''}
+      ${includePay && canPay ? `<div><button class="btn" data-pay="${order.id}">Online bezahlen</button></div>` : ''}
     </div>
   `;
 }

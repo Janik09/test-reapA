@@ -5,5 +5,6 @@ public enum OrderStatus {
     PREPARING,
     READY,
     PAID,
+    PAID_MOCK,
     Paid_MOCK
 }

@@ -85,9 +85,10 @@ const actions = {
     try {
       const reservation = await api.createReservation(payload);
       state.reservationResult = reservation;
-      alert(`Reservierung bestätigt! 
-Datum: $\{formatReservationDate(reservation.date TimeStart)}
-Uhrzeit: ${formatReservationTime(reservation.dateTimeStart)}\nPersonen: ${reservation.persons}\nName: ${reservation.customerName}`);
+      const dateLabel = formatReservationDate(reservation.dateTimeStart);
+      const timeLabel = formatReservationTime(reservation.dateTimeStart);
+      const nameLine = reservation.customerName ? `\nName: ${reservation.customerName}` : '';
+      alert(`Reservierung bestätigt!\nDatum: ${dateLabel}\nUhrzeit: ${timeLabel}\nPersonen: ${reservation.persons}${nameLine}`);
       showToast(`Reservierung bestätigt! Tisch ${reservation.tableName}.`);
       handleRoute();
     } catch (error) {

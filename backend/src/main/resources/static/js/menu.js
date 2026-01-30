@@ -8,6 +8,13 @@ const categoryTitles = {
   DRINK: 'Getränke',
 };
 
+function buildImageMarkup(item) {
+  if (!item.imageUrl) {
+    return '<div class="menu-card__fallback">Bild nicht verfügbar</div>';
+  }
+  return `<img src="${item.imageUrl}" alt="${item.name}" loading="lazy" />`;
+}
+
 function renderCategorySection(category, items) {
   const title = categoryTitles[category] || category;
   return `
@@ -17,7 +24,7 @@ function renderCategorySection(category, items) {
         ${items.map((item) => `
           <article class="card menu-card">
             <div class="menu-card__media">
-              <img src="${item.imageUrl}" alt="${item.name}" loading="lazy" />
+              ${buildImageMarkup(item)}
             </div>
             <div class="menu-card__meta">
               <span class="badge">${title}</span>
@@ -57,5 +64,18 @@ export function renderMenu(root, state, actions) {
   container.innerHTML = grouped.map((group) => renderCategorySection(group.category, group.items)).join('');
   container.querySelectorAll('[data-add]').forEach((button) => {
     button.addEventListener('click', () => actions.onAddToCart(Number(button.dataset.add)));
+  });
+
+  container.querySelectorAll('.menu-card__media img').forEach((img) => {
+    const fallback = () => {
+      const wrapper = img.closest('.menu-card__media');
+      if (!wrapper) return;
+      wrapper.innerHTML = '<div class="menu-card__fallback">Bild nicht verfügbar</div>';
+    };
+    if (!img.getAttribute('src')) {
+      fallback();
+      return;
+    }
+    img.addEventListener('error', fallback, { once: true });
   });
 }
