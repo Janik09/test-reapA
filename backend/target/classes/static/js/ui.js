@@ -348,15 +348,15 @@ export function renderAdmin(root, state, actions) {
   root.innerHTML = `
     <section class="card">
       <h2 class="section-title">Admin</h2>
-      <p class="text-muted">Alle Daten sehen, hinzufügen und löschen.</p>
+      <p class="text-muted">Alle Daten sehen, hinzufÃ¼gen und lÃ¶schen.</p>
       <div class="grid">
         <button class="btn btn--secondary" id="adminRefresh">Neu laden</button>
-        <button class="btn btn--danger" id="adminDeleteAll">Alles löschen</button>
+        <button class="btn btn--danger" id="adminDeleteAll">Alles lÃ¶schen</button>
       </div>
     </section>
 
     <section class="card waiter-section">
-      <h3 class="section-title">Menü</h3>
+      <h3 class="section-title">MenÃ¼</h3>
       <form id="adminMenuForm" class="grid grid--2">
         <div class="form-group">
           <label for="adminMenuName">Name</label>
@@ -368,7 +368,7 @@ export function renderAdmin(root, state, actions) {
             <option value="STARTER">Vorspeise</option>
             <option value="MAIN">Hauptgericht</option>
             <option value="DESSERT">Dessert</option>
-            <option value="DRINK">Getränk</option>
+            <option value="DRINK">GetrÃ¤nk</option>
           </select>
         </div>
         <div class="form-group">
@@ -386,23 +386,23 @@ export function renderAdmin(root, state, actions) {
         <div class="form-group">
           <label>
             <input id="adminMenuAvailable" type="checkbox" checked />
-            Verfügbar
+            VerfÃ¼gbar
           </label>
         </div>
         <div class="form-group form-actions">
-          <button class="btn" type="submit">Menüeintrag hinzufügen</button>
-          <button class="btn btn--danger" type="button" id="adminDeleteAllMenu">Alle Menüeinträge löschen</button>
+          <button class="btn" type="submit">MenÃ¼eintrag hinzufÃ¼gen</button>
+          <button class="btn btn--danger" type="button" id="adminDeleteAllMenu">Alle MenÃ¼eintrÃ¤ge lÃ¶schen</button>
         </div>
       </form>
       <div>
-        ${menuItems.length === 0 ? '<p class="text-muted">Keine Menüeinträge.</p>' : menuItems.map(adminMenuRow).join('')}
+        ${menuItems.length === 0 ? '<p class="text-muted">Keine MenÃ¼eintrÃ¤ge.</p>' : menuItems.map(adminMenuRow).join('')}
       </div>
     </section>
 
     <section class="card waiter-section">
       <h3 class="section-title">Bestellungen</h3>
       <div class="grid">
-        <button class="btn btn--danger" id="adminDeleteAllOrders">Alle Bestellungen löschen</button>
+        <button class="btn btn--danger" id="adminDeleteAllOrders">Alle Bestellungen lÃ¶schen</button>
       </div>
       <div>
         ${orders.length === 0 ? '<p class="text-muted">Keine Bestellungen.</p>' : orders.map(adminOrderRow).join('')}
@@ -412,7 +412,7 @@ export function renderAdmin(root, state, actions) {
     <section class="card waiter-section">
       <h3 class="section-title">Reservierungen</h3>
       <div class="grid">
-        <button class="btn btn--danger" id="adminDeleteAllReservations">Alle Reservierungen löschen</button>
+        <button class="btn btn--danger" id="adminDeleteAllReservations">Alle Reservierungen lÃ¶schen</button>
       </div>
       <div>
         ${reservations.length === 0 ? '<p class="text-muted">Keine Reservierungen.</p>' : reservations.map(adminReservationRow).join('')}
@@ -422,22 +422,22 @@ export function renderAdmin(root, state, actions) {
 
   root.querySelector('#adminRefresh')?.addEventListener('click', actions.onAdminRefresh);
   root.querySelector('#adminDeleteAll')?.addEventListener('click', () => {
-    if (confirm('Wirklich ALLES löschen?')) {
+    if (confirm('Wirklich ALLES lÃ¶schen?')) {
       actions.onAdminDeleteEverything();
     }
   });
   root.querySelector('#adminDeleteAllMenu')?.addEventListener('click', () => {
-    if (confirm('Alle Menüeinträge löschen?')) {
+    if (confirm('Alle MenÃ¼eintrÃ¤ge lÃ¶schen?')) {
       actions.onAdminDeleteAllMenuItems();
     }
   });
   root.querySelector('#adminDeleteAllOrders')?.addEventListener('click', () => {
-    if (confirm('Alle Bestellungen löschen?')) {
+    if (confirm('Alle Bestellungen lÃ¶schen?')) {
       actions.onAdminDeleteAllOrders();
     }
   });
   root.querySelector('#adminDeleteAllReservations')?.addEventListener('click', () => {
-    if (confirm('Alle Reservierungen löschen?')) {
+    if (confirm('Alle Reservierungen lÃ¶schen?')) {
       actions.onAdminDeleteAllReservations();
     }
   });
@@ -569,7 +569,7 @@ function waiterOrderCard(order, isDone) {
     <article class="card">
       <div class="chef-order__header">
         <h3 class="section-title">Bestellung #${order.id}</h3>
-        <span class="badge price-badge">${total.toFixed(2)} €</span>
+        <span class="badge price-badge">${total.toFixed(2)} </span>
       </div>
       <div class="chef-order__meta">
         <div>Reservierung: ${reservationTime}</div>
@@ -584,7 +584,7 @@ function waiterOrderCard(order, isDone) {
 function waiterReservationRow(reservation) {
   return `
     <div class="summary-item">
-      <strong>#${reservation.id}</strong> – ${reservation.customerName}<br />
+      <strong>#${reservation.id}</strong>  ${reservation.customerName}<br />
       <small>${formatDateTime(reservation.dateTimeStart)} | ${reservation.persons} Personen | ${reservation.durationMinutes} Min</small><br />
       <small>Tisch: ${reservation.tableName} | Status: ${reservation.status}</small>
     </div>
@@ -594,11 +594,11 @@ function waiterReservationRow(reservation) {
 function adminMenuRow(item) {
   return `
     <div class="summary-item">
-      <strong>#${item.id}</strong> – ${item.name} (${item.category})<br />
+      <strong>#${item.id}</strong>  ${item.name} (${item.category})<br />
       <small>${item.description}</small><br />
-      <small>Preis: ${Number(item.price || 0).toFixed(2)} € | Bild: ${item.imageUrl || '-'}</small>
+      <small>Preis: ${Number(item.price || 0).toFixed(2)}  | Bild: ${item.imageUrl || '-'}</small>
       <div style="margin-top:8px;">
-        <button class="btn btn--danger" data-admin-delete-menu="${item.id}">Löschen</button>
+        <button class="btn btn--danger" data-admin-delete-menu="${item.id}">LÃ¶schen</button>
       </div>
     </div>
   `;
@@ -610,11 +610,11 @@ function adminOrderRow(order) {
     : '';
   return `
     <div class="summary-item">
-      <strong>#${order.id}</strong> – ${order.customerName}<br />
-      <small>Status: ${order.status} | Gesamt: ${Number(order.total || 0).toFixed(2)} €</small><br />
+      <strong>#${order.id}</strong>  ${order.customerName}<br />
+      <small>Status: ${order.status} | Gesamt: ${Number(order.total || 0).toFixed(2)} </small><br />
       <small>${items || 'Keine Items.'}</small>
       <div style="margin-top:8px;">
-        <button class="btn btn--danger" data-admin-delete-order="${order.id}">Löschen</button>
+        <button class="btn btn--danger" data-admin-delete-order="${order.id}">LÃ¶schen</button>
       </div>
     </div>
   `;
@@ -623,11 +623,11 @@ function adminOrderRow(order) {
 function adminReservationRow(reservation) {
   return `
     <div class="summary-item">
-      <strong>#${reservation.id}</strong> – ${reservation.customerName}<br />
+      <strong>#${reservation.id}</strong>  ${reservation.customerName}<br />
       <small>${formatDateTime(reservation.dateTimeStart)} | ${reservation.persons} Personen | ${reservation.durationMinutes} Min</small><br />
       <small>Tisch: ${reservation.tableName} | Status: ${reservation.status}</small>
       <div style="margin-top:8px;">
-        <button class="btn btn--danger" data-admin-delete-reservation="${reservation.id}">Löschen</button>
+        <button class="btn btn--danger" data-admin-delete-reservation="${reservation.id}">LÃ¶schen</button>
       </div>
     </div>
   `;

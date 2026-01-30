@@ -11,12 +11,12 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 @RequestMapping("/api/auth")
 public class AuthController {
-    private static final String VALID_USERNAME = "Janik Gierer";
-    private static final String VALID_PASSWORD = "123456";
+    private static final String VALID_USERNAME = "Gast";
+    private static final String VALID_PASSWORD = "Gast1";
     private static final String CHEF_USERNAME = "Koch";
-    private static final String CHEF_PASSWORD = "Pizza1";
+    private static final String CHEF_PASSWORD = "Koch1";
     private static final String WAITER_USERNAME = "Kellner";
-    private static final String WAITER_PASSWORD = "Service1";
+    private static final String WAITER_PASSWORD = "Kellner1";
     private static final String ADMIN_USERNAME = "Admin";
     private static final String ADMIN_PASSWORD = "Admin1";
 
