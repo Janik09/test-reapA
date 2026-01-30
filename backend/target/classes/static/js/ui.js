@@ -118,6 +118,7 @@ export function renderReservation(root, state, actions) {
       </div>
       <div class="card" id="reservationResult">
         <h3 class="section-title">Bestätigung</h3>
+        ${reservationGallery()}
         ${state.reservationResult ? reservationSummary(state.reservationResult) : '<p>Noch keine Reservierung erstellt.</p>'}
       </div>
     </section>
@@ -149,10 +150,21 @@ export function renderReservation(root, state, actions) {
     };
     actions.onCreateReservation(payload);
   });
+
+  root.querySelectorAll('.reservation-media img[data-fallback]').forEach((image) => {
+    image.addEventListener('error', () => {
+      image.classList.add('hidden');
+      const fallback = image.closest('.reservation-media__item')?.querySelector('.menu-card__fallback');
+      if (fallback) {
+        fallback.classList.remove('hidden');
+      }
+    });
+  });
 }
 
 export function renderOrder(root, state, actions) {
   const total = state.cart.reduce((sum, item) => sum + item.price * item.quantity, 0);
+  const canPayOrder = state.orderResult && !['PAID', 'PAID_MOCK'].includes(state.orderResult.status);
   root.innerHTML = `
     <section class="grid grid--2">
       <div class="card">
@@ -300,6 +312,23 @@ function reservationSummary(reservation) {
       <strong>#${reservation.id}</strong> – ${reservation.customerName}<br />
       <small>${formatDateTime(reservation.dateTimeStart)} | ${reservation.persons} Personen | ${reservation.durationMinutes} Min</small><br />
       <small>Tisch: ${reservation.tableName} | Status: ${reservation.status}</small>
+    </div>
+  `;
+}
+
+function reservationGallery() {
+  return `
+    <div class="reservation-media">
+      <div class="reservation-media__item">
+        <img src="/img/PizzaMargarita.jpg" alt="Pizza Margherita" loading="lazy" data-fallback />
+        <div class="menu-card__fallback hidden">Bild nicht verfügbar</div>
+        <p class="reservation-media__caption">Italienische Klassiker</p>
+      </div>
+      <div class="reservation-media__item">
+        <img src="/img/Tiramisu.jpg" alt="Tiramisu" loading="lazy" data-fallback />
+        <div class="menu-card__fallback hidden">Bild nicht verfügbar</div>
+        <p class="reservation-media__caption">Hausgemachte Desserts</p>
+      </div>
     </div>
   `;
 }
