@@ -306,6 +306,7 @@ const actions = {
       state.cart = [];
       showToast(`Bestellung #${order.id} wurde angelegt.`);
       handleRoute();
+      showOrderQr(order);
     } catch (error) {
       showToast(error.message, 'error');
     } finally {
@@ -533,6 +534,14 @@ const actions = {
     markOrderDone(id);
     showToast('Bestellung als fertig markiert.');
     handleRoute();
+  },
+  onShowOrderQr: (id) => {
+    const order = findOrderById(id);
+    if (!order) {
+      showToast('Bestellung nicht gefunden.', 'error');
+      return;
+    }
+    showOrderQr(order);
   },
 };
 function buildPaymentForm(order) {
