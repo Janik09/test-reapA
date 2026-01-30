@@ -140,6 +140,41 @@ const actions = {
       setLoading(false);
     }
   },
+  onPayOrder: async (id) => {
+    const order = state.orderResult?.id === id
+      ? state.orderResult
+      : state.lookupOrders.find((entry) => entry.id === id);
+    if (!order) {
+      showToast('Bestellung nicht gefunden.', 'error');
+      return;
+    }
+
+    showModal(`
+      <h2 class="section-title">Zahlung wird verarbeitet</h2>
+      <p class="text-muted">Bestellung #${order.id}</p>
+    `);
+    setLoading(true);
+    try {
+      await new Promise((resolve) => setTimeout(resolve, 1000));
+      const updated = await api.payOrderMock(order.id);
+      if (state.orderResult?.id === updated.id) {
+        state.orderResult = updated;
+      }
+      state.lookupOrders = state.lookupOrders.map((entry) => (entry.id === updated.id ? updated : entry));
+      showModal(`
+        <h2 class="section-title">Bezahlung erfolgreich (Mock)</h2>
+        <p class="text-muted">Bestellung #${updated.id} ist jetzt als bezahlt markiert.</p>
+        <button class="btn" id="paymentClose">OK</button>
+      `);
+      document.getElementById('paymentClose')?.addEventListener('click', closeModal);
+      showToast(`Bestellung #${updated.id} ist bezahlt (Mock).`);
+      handleRoute();
+    } catch (error) {
+      showToast(error.message, 'error');
+    } finally {
+      setLoading(false);
+    }
+  },
   onStartPayment: (id) => {
     const order = state.orderResult?.id === id
         ? state.orderResult
