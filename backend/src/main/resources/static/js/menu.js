@@ -32,7 +32,7 @@ function renderCategorySection(category, items) {
   `;
 }
 
-export async function renderMenu(root, state, actions) {
+export function renderMenu(root, state, actions) {
   const template = document.getElementById('menuSectionTemplate');
   root.innerHTML = template ? template.innerHTML : `
     <section class="card">
@@ -43,32 +43,19 @@ export async function renderMenu(root, state, actions) {
   `;
 
   const container = root.querySelector('#menuContent');
-  setLoading(true);
-  try {
-    const response = await fetch('/api/menu');
-    if (!response.ok) {
-      throw new Error('Menü konnte nicht geladen werden.');
-    }
-    const data = await response.json();
-    if (!Array.isArray(data) || data.length === 0) {
-      container.innerHTML = '<p class="text-muted">Keine Menüdaten verfügbar</p>';
-      return;
-    }
-    state.menuItems = data;
-    const grouped = categoryOrder.map((category) => ({
-      category,
-      items: state.menuItems.filter((item) => item.category === category),
-    })).filter((group) => group.items.length > 0);
 
-    container.innerHTML = grouped.map((group) => renderCategorySection(group.category, group.items)).join('');
-    container.querySelectorAll('[data-add]').forEach((button) => {
-      button.addEventListener('click', () => actions.onAddToCart(Number(button.dataset.add)));
-    });
-  } catch (error) {
-    console.error('Menü konnte nicht geladen werden.', error);
-    showToast('Menü konnte nicht geladen werden.', 'error');
-    container.innerHTML = '<p class="text-muted">Menüdaten sind aktuell nicht verfügbar.</p>';
-  } finally {
-    setLoading(false);
+  if (!Array.isArray(state.menuItems) || state.menuItems.length === 0) {
+    container.innerHTML = '<p class="text-muted">Keine Menüdaten verfügbar</p>';
+    return;
   }
+
+  const grouped = categoryOrder.map((category) => ({
+    category,
+    items: state.menuItems.filter((item) => item.category === category),
+  })).filter((group) => group.items.length > 0);
+
+  container.innerHTML = grouped.map((group) => renderCategorySection(group.category, group.items)).join('');
+  container.querySelectorAll('[data-add]').forEach((button) => {
+    button.addEventListener('click', () => actions.onAddToCart(Number(button.dataset.add)));
+  });
 }
