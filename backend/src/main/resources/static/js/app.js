@@ -1,4 +1,4 @@
-import { api } from './api.js';
+﻿import { api } from './api.js';
 import { registerRoute, initRouter, handleRoute, navigate } from './router.js';
 import { renderMenu } from './menu.js';
 import {
@@ -27,15 +27,30 @@ const state = {
   lookupOrders: [],
 };
 
-async function loadMenu() {
-  setLoading(true);
-  try {
-    state.menuItems = await api.getMenu();
-  } catch (error) {
-    showToast('Menü konnte nicht geladen werden.', 'error');
-  } finally {
-    setLoading(false);
+let menuLoadPromise = null;
+let menuLoaded = false;
+
+async function fetchMenu() {
+  if (menuLoadPromise) {
+    return menuLoadPromise;
   }
+  menuLoadPromise = (async () => {
+    setLoading(true);
+    try {
+      const data = await api.getMenu();
+      state.menuItems = Array.isArray(data) ? data : [];
+      menuLoaded = true;
+      return state.menuItems;
+    } catch (error) {
+      state.menuItems = [];
+      showToast('Menü konnte nicht geladen werden.', 'error');
+      return state.menuItems;
+    } finally {
+      setLoading(false);
+      menuLoadPromise = null;
+    }
+  })();
+  return menuLoadPromise;
 }
 
 const actions = {
@@ -45,7 +60,7 @@ const actions = {
       await api.login(payload);
       state.isAuthenticated = true;
       state.loginError = '';
-      await loadMenu();
+      await fetchMenu();
       navigate('/home');
     } catch (error) {
       state.loginError = 'Wrong username or password. Try again.';
@@ -80,7 +95,7 @@ const actions = {
       closeModal();
     });
   },
-    onCreateReservation: async (payload) => {
+  onCreateReservation: async (payload) => {
     setLoading(true);
     try {
       const reservation = await api.createReservation(payload);
@@ -276,8 +291,8 @@ async function init() {
   registerRoute('/login', () => renderLogin(root, state, actions));
   registerRoute('/home', guarded(() => renderHome(root)));
   registerRoute('/menu', guarded(async () => {
-    if (!Array.isArray(state.menuItems) || state.menuItems.length === 0) {
-      await loadMenu();
+    if (!menuLoaded) {
+      await fetchMenu();
     }
     renderMenu(root, state, actions);
   }));
@@ -295,7 +310,8 @@ async function init() {
   }
 }
 
-init();
-
-
-
+if (document.readyState === 'loading') {
+  document.addEventListener('DOMContentLoaded', init);
+} else {
+  init();
+}

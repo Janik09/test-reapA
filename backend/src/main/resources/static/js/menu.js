@@ -50,7 +50,11 @@ export function renderMenu(root, state, actions) {
     <section id="menuContent"></section>
   `;
 
-  const container = root.querySelector('#menuContent');
+  let container = root.querySelector('#menuContent');
+  if (!container) {
+    root.insertAdjacentHTML('beforeend', '<section id="menuContent"></section>');
+    container = root.querySelector('#menuContent');
+  }
 
   if (!Array.isArray(state.menuItems) || state.menuItems.length === 0) {
     container.innerHTML = '<p class="text-muted">Keine Menüdaten verfügbar</p>';
@@ -62,7 +66,11 @@ export function renderMenu(root, state, actions) {
     items: state.menuItems.filter((item) => item.category === category),
   })).filter((group) => group.items.length > 0);
 
-  container.innerHTML = grouped.map((group) => renderCategorySection(group.category, group.items)).join('');
+  if (grouped.length === 0) {
+    container.innerHTML = renderCategorySection('Speisekarte', state.menuItems);
+  } else {
+    container.innerHTML = grouped.map((group) => renderCategorySection(group.category, group.items)).join('');
+  }
   container.querySelectorAll('[data-add]').forEach((button) => {
     button.addEventListener('click', () => actions.onAddToCart(Number(button.dataset.add)));
   });
