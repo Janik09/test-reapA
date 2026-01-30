@@ -71,6 +71,14 @@ public class ReservationService {
         return toResponse(reservation);
     }
 
+    public List<ReservationResponse> getAllReservations() {
+        return reservationRepository.findAll().stream()
+                .sorted(Comparator.comparing(Reservation::getDateTimeStart)
+                        .thenComparing(Reservation::getId))
+                .map(this::toResponse)
+                .collect(Collectors.toList());
+    }
+
     private void validateRequest(ReservationRequest request) {
         if (request == null) {
             throw new BadRequestException("Reservierungsdaten fehlen");

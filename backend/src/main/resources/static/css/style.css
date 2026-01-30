@@ -96,8 +96,14 @@ img {
 .site-nav a[data-role="chef"] {
   display: none;
 }
+.site-nav a[data-role="waiter"] {
+  display: none;
+}
 
 .role-chef .site-nav a[data-role="chef"] {
+  display: inline-flex;
+}
+.role-waiter .site-nav a[data-role="waiter"] {
   display: inline-flex;
 }
 
@@ -478,6 +484,10 @@ textarea:focus {
   margin: 8px 0 12px;
   color: var(--text-muted);
   font-size: 14px;
+}
+
+.waiter-section {
+  margin-top: 16px;
 }
 
 .form-actions {

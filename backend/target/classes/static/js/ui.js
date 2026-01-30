@@ -310,6 +310,36 @@ export function renderChef(root, state, actions) {
   });
 }
 
+export function renderWaiter(root, state, actions) {
+  const orders = Array.isArray(state.waiterOrders) ? state.waiterOrders : [];
+  const completedSet = new Set(state.completedOrders || []);
+  const finishedOrders = orders.filter((order) => completedSet.has(order.id));
+  const acceptedOrders = orders.filter((order) => !completedSet.has(order.id));
+  const reservations = Array.isArray(state.waiterReservations) ? state.waiterReservations : [];
+
+  root.innerHTML = `
+    <section class="card">
+      <h2 class="section-title">Service</h2>
+      <p class="text-muted">Oben fertige Gerichte, darunter angenommene Bestellungen und alle Reservierungen.</p>
+    </section>
+    <section class="waiter-section">
+      <h3 class="section-title">Fertige Gerichte</h3>
+      <div class="grid grid--2">
+        ${finishedOrders.length === 0 ? '<p class="text-muted">Keine fertigen Gerichte.</p>' : finishedOrders.map((order) => waiterOrderCard(order, true)).join('')}
+      </div>
+    </section>
+    <section class="waiter-section">
+      <h3 class="section-title">Angenommene Bestellungen</h3>
+      <div class="grid grid--2">
+        ${acceptedOrders.length === 0 ? '<p class="text-muted">Keine angenommenen Bestellungen.</p>' : acceptedOrders.map((order) => waiterOrderCard(order, false)).join('')}
+      </div>
+    </section>
+    <section class="waiter-section">
+      <h3 class="section-title">Reservierungen</h3>
+      ${reservations.length === 0 ? '<p class="text-muted">Keine Reservierungen vorhanden.</p>' : reservations.map(waiterReservationRow).join('')}
+    </section>
+  `;
+}
 export function renderContact(root) {
   root.innerHTML = `
     <section class="card">
@@ -396,4 +426,39 @@ function formatDateTime(value) {
   const date = new Date(value);
   if (Number.isNaN(date.getTime())) return value;
   return date.toLocaleString('de-DE');
+}
+
+function waiterOrderCard(order, isDone) {
+  const total = Number(order.total || 0);
+  const reservationTime = order.reservation?.dateTimeStart
+    ? formatDateTime(order.reservation.dateTimeStart)
+    : 'Keine Reservierung';
+  const tableInfo = order.reservation?.tableName ? `Tisch: ${order.reservation.tableName}` : '';
+  const items = Array.isArray(order.items)
+    ? order.items.map((item) => `${item.quantity}x ${item.nameSnapshot}`).join(', ')
+    : '';
+  return `
+    <article class="card">
+      <div class="chef-order__header">
+        <h3 class="section-title">Bestellung #${order.id}</h3>
+        <span class="badge price-badge">${total.toFixed(2)} €</span>
+      </div>
+      <div class="chef-order__meta">
+        <div>Reservierung: ${reservationTime}</div>
+        ${tableInfo ? `<div>${tableInfo}</div>` : ''}
+      </div>
+      <p>${items || 'Keine Items vorhanden.'}</p>
+      <span class="badge ${isDone ? 'price-badge' : ''}">${isDone ? 'Fertig gekocht' : 'Angenommen'}</span>
+    </article>
+  `;
+}
+
+function waiterReservationRow(reservation) {
+  return `
+    <div class="summary-item">
+      <strong>#${reservation.id}</strong> – ${reservation.customerName}<br />
+      <small>${formatDateTime(reservation.dateTimeStart)} | ${reservation.persons} Personen | ${reservation.durationMinutes} Min</small><br />
+      <small>Tisch: ${reservation.tableName} | Status: ${reservation.status}</small>
+    </div>
+  `;
 }

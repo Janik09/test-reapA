@@ -52,6 +52,7 @@ export const api = {
   createReservation: (payload) => request('/reservations', { method: 'POST', body: JSON.stringify(payload) }),
   getReservations: (contact) => request(`/reservations?contact=${encodeURIComponent(contact)}`),
   getReservation: (id) => request(`/reservations/${id}`),
+  getAllReservations: () => request('/reservations/all'),
   createOrder: (payload) => request('/orders', { method: 'POST', body: JSON.stringify(payload) }),
   getOrders: (contact) => request(`/orders?contact=${encodeURIComponent(contact)}`),
   getOrder: (id) => request(`/orders/${id}`),

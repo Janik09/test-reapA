@@ -9,6 +9,7 @@ import {
   renderLookup,
   renderContact,
   renderChef,
+  renderWaiter,
   showToast,
   showModal,
   closeModal,
@@ -33,6 +34,8 @@ const state = {
   paidOrders: [],
   completedOrders: [],
   chefOrders: [],
+  waiterOrders: [],
+  waiterReservations: [],
 };
 
 function loadJson(key, fallback) {
@@ -59,6 +62,7 @@ state.completedOrders = loadJson(COMPLETED_ORDERS_KEY, []);
 function setRole(role) {
   state.userRole = role;
   document.body.classList.toggle('role-chef', role === 'chef');
+  document.body.classList.toggle('role-waiter', role === 'waiter');
 }
 
 function markOrderPaid(order) {
@@ -127,6 +131,31 @@ async function loadChefOrders() {
   state.chefOrders = sortChefOrders(enriched);
 }
 
+async function loadWaiterOrders() {
+  const paidOrders = Array.isArray(state.paidOrders) ? state.paidOrders : [];
+  const enriched = await Promise.all(paidOrders.map(async (order) => {
+    let reservation = null;
+    if (order.reservationId) {
+      try {
+        reservation = await api.getReservation(order.reservationId);
+      } catch (error) {
+        console.warn('Reservierung konnte nicht geladen werden.', { orderId: order.id, error });
+      }
+    }
+    return { ...order, reservation };
+  }));
+  state.waiterOrders = sortChefOrders(enriched);
+}
+
+async function loadWaiterReservations() {
+  try {
+    state.waiterReservations = await api.getAllReservations();
+  } catch (error) {
+    console.warn('Reservierungen konnten nicht geladen werden.', { error });
+    state.waiterReservations = [];
+  }
+}
+
 let menuLoadPromise = null;
 let menuLoaded = false;
 
@@ -160,11 +189,18 @@ const actions = {
       const result = await api.login(payload);
       state.isAuthenticated = true;
       state.loginError = '';
-      const isChef = result?.role === 'chef' || payload.username?.trim().toLowerCase() === 'koch';
-      setRole(isChef ? 'chef' : 'customer');
+      const role = result?.role || 'customer';
+      const isChef = role === 'chef';
+      const isWaiter = role === 'waiter';
+      setRole(isChef ? 'chef' : isWaiter ? 'waiter' : 'customer');
       if (isChef) {
         await loadChefOrders();
         navigate('/chef');
+        return;
+      }
+      if (isWaiter) {
+        await Promise.all([loadWaiterOrders(), loadWaiterReservations()]);
+        navigate('/waiter');
         return;
       }
       await fetchMenu();
@@ -440,6 +476,18 @@ async function init() {
     renderer();
   };
 
+  const waiterGuard = (renderer) => () => {
+    if (!state.isAuthenticated) {
+      navigate('/login');
+      return;
+    }
+    if (state.userRole !== 'waiter') {
+      navigate('/home');
+      return;
+    }
+    renderer();
+  };
+
   registerRoute('/login', () => renderLogin(root, state, actions));
   registerRoute('/home', guarded(() => renderHome(root)));
   registerRoute('/menu', guarded(async () => {
@@ -454,6 +502,10 @@ async function init() {
   registerRoute('/chef', chefGuard(async () => {
     await loadChefOrders();
     renderChef(root, state, actions);
+  }));
+  registerRoute('/waiter', waiterGuard(async () => {
+    await Promise.all([loadWaiterOrders(), loadWaiterReservations()]);
+    renderWaiter(root, state, actions);
   }));
   registerRoute('/contact', guarded(() => renderContact(root)));
 

@@ -15,6 +15,8 @@ public class AuthController {
     private static final String VALID_PASSWORD = "123456";
     private static final String CHEF_USERNAME = "Koch";
     private static final String CHEF_PASSWORD = "Pizza1";
+    private static final String WAITER_USERNAME = "Kellner";
+    private static final String WAITER_PASSWORD = "Service1";
 
     @PostMapping("/login")
     public ResponseEntity<Map<String, String>> login(@RequestBody LoginRequest request) {
@@ -30,6 +32,11 @@ public class AuthController {
                 && CHEF_PASSWORD.equals(password);
         if (isChef) {
             return ResponseEntity.ok(Map.of("status", "success", "role", "chef"));
+        }
+        boolean isWaiter = WAITER_USERNAME.equalsIgnoreCase(username)
+                && WAITER_PASSWORD.equals(password);
+        if (isWaiter) {
+            return ResponseEntity.ok(Map.of("status", "success", "role", "waiter"));
         }
         boolean matches = VALID_USERNAME.equals(username)
                 && VALID_PASSWORD.equals(password);
