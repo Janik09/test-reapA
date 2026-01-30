@@ -80,14 +80,15 @@ const actions = {
       closeModal();
     });
   },
-  onCreateReservation: async (payload) => {
+    onCreateReservation: async (payload) => {
     setLoading(true);
     try {
       const reservation = await api.createReservation(payload);
       state.reservationResult = reservation;
-      alert(`Reservierung bestätigt! 
-Datum: $\{formatReservationDate(reservation.date TimeStart)}
-Uhrzeit: ${formatReservationTime(reservation.dateTimeStart)}\nPersonen: ${reservation.persons}\nName: ${reservation.customerName}`);
+      const reservationDate = formatReservationDate(reservation.dateTimeStart);
+      const reservationTime = formatReservationTime(reservation.dateTimeStart);
+      const nameLine = reservation.customerName ? `\nName: ${reservation.customerName}` : '';
+      alert(`Reservierung bestätigt!\nDatum: ${reservationDate}\nUhrzeit: ${reservationTime}\nPersonen: ${reservation.persons}${nameLine}`);
       showToast(`Reservierung bestätigt! Tisch ${reservation.tableName}.`);
       handleRoute();
     } catch (error) {
@@ -274,7 +275,12 @@ async function init() {
 
   registerRoute('/login', () => renderLogin(root, state, actions));
   registerRoute('/home', guarded(() => renderHome(root)));
-  registerRoute('/menu', guarded(() => renderMenu(root, state, actions)));
+  registerRoute('/menu', guarded(async () => {
+    if (!Array.isArray(state.menuItems) || state.menuItems.length === 0) {
+      await loadMenu();
+    }
+    renderMenu(root, state, actions);
+  }));
   registerRoute('/reservation', guarded(() => renderReservation(root, state, actions)));
   registerRoute('/order', guarded(() => renderOrder(root, state, actions)));
   registerRoute('/lookup', guarded(() => renderLookup(root, state, actions)));
@@ -290,3 +296,6 @@ async function init() {
 }
 
 init();
+
+
+
