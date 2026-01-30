@@ -93,7 +93,7 @@ public class OrderService {
     public OrderResponse payOrderMock(Long id) {
         RestaurantOrder order = orderRepository.findById(id)
                 .orElseThrow(() -> new NotFoundException("Bestellung nicht gefunden"));
-        order.setStatus(OrderStatus.PAID_MOCK);
+        order.setStatus(OrderStatus.Paid_MOCK);
         RestaurantOrder saved = orderRepository.save(order);
         return toResponse(saved);
     }
